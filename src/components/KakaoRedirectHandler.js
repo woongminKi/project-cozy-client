@@ -1,0 +1,55 @@
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginRequest, loginSuccess } from '../features/auth/authSlice';
+import axios from 'axios';
+import qs from 'qs';
+
+export default function KakaoRedirectHandler() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loginStatus = useSelector((state) => state.auth.loginStatus);
+
+  const restAPIKey = `${process.env.REACT_APP_API_ID}`;
+  const redirectURI = `${process.env.REACT_APP_REDIRECT_URI}/oauth/kakao/callback`;
+  const grantType = 'authorization_code';
+  const code = new URL(window.location.href).searchParams.get('code');
+
+  const getToken = async () => {
+    const payload = qs.stringify({
+      grant_type: grantType,
+      client_id: restAPIKey,
+      redirect_uri: redirectURI,
+      code,
+    });
+
+    try {
+      const res = await axios.post(
+        'https://kauth.kakao.com/oauth/token',
+        payload
+      );
+
+      window.Kakao.init(restAPIKey);
+      window.Kakao.Auth.setAccessToken(res.data.access_token);
+      sessionStorage.setItem('accessToken', res.data.access_token);
+      sessionStorage.setItem('refreshToken', res.data.refresh_token);
+
+      if (!loginStatus) {
+        dispatch(loginRequest({ res }));
+        dispatch(loginSuccess());
+      }
+
+      if (res.status === 200) {
+        navigate('/main');
+      }
+    } catch (err) {
+      console.log('Kakao Redirect Handler Error:', err);
+    }
+  };
+
+  useEffect(() => {
+    getToken();
+  }, []);
+
+  return null;
+}
