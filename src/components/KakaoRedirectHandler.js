@@ -31,8 +31,8 @@ export default function KakaoRedirectHandler() {
 
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
-      sessionStorage.setItem('accessToken', res.data.access_token);
-      sessionStorage.setItem('refreshToken', res.data.refresh_token);
+      localStorage.setItem('accessToken', res.data.access_token);
+      localStorage.setItem('refreshToken', res.data.refresh_token);
 
       if (!loginStatus) {
         dispatch(loginRequest({ res }));

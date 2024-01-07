@@ -3,15 +3,17 @@ import { all, fork, put, takeLatest, takeEvery } from 'redux-saga/effects';
 import { loginRequest, loginSuccess, loginFail } from './authSlice';
 
 function* userLogin({ payload }) {
-  const { data } = payload.responseToken;
+  const { res } = payload;
+  console.log('payload??', res);
 
-  const accessToken = data.access_token;
-  const refreshToken = data.refresh_token;
-  const accessTokenExpiresIn = data.expires_in;
-  const refreshTokenExpiresIn = data.refresh_token_expires_in;
+  const accessToken = res.data.access_token;
+  const refreshToken = res.data.refresh_token;
+  const accessTokenExpiresIn = res.data.expires_in;
+  const refreshTokenExpiresIn = res.data.refresh_token_expires_in;
 
   try {
     yield axios.post('http://localhost:8000/login', {
+      // server url
       header: {
         accessToken,
         refreshToken,

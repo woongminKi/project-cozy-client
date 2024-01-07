@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@canvasjs/charts": "^3.7.32",
+    "@canvasjs/react-stockcharts": "^1.0.0",
+    "@canvasjs/stockcharts": "^1.7.32",
     "@reduxjs/toolkit": "^2.0.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
