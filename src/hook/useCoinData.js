@@ -4,6 +4,7 @@ const UPBIT_URL = 'wss://api.upbit.com/websocket/v1';
 export default function useCoinData() {
   const [result, setResult] = useState();
   const [timer, setTimer] = useState();
+  const accessToken = localStorage.getItem('accessToken');
   const data = [
     { ticket: 'nexoneunji' },
     { type: 'ticker', codes: ['KRW-BTC'], isOnlyRealtime: true },

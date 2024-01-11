@@ -34,7 +34,7 @@ export default function KakaoRedirectHandler() {
       localStorage.setItem('accessToken', res.data.access_token);
       localStorage.setItem('refreshToken', res.data.refresh_token);
 
-      if (!loginStatus) {
+      if (!res.data.access_token) {
         dispatch(loginRequest({ res }));
         dispatch(loginSuccess());
       }
