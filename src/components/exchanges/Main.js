@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import CanvasJSReact from '@canvasjs/react-stockcharts';
 import { useSelector, useDispatch } from 'react-redux';
+import { styled } from 'styled-components';
 import useCoinData from '../../hook/useCoinData';
 import {
   requestCoinList,
   requestSocketData,
 } from '../../features/stock/stockSlice';
+import { RED, BLUE, BLACK } from '../common/style';
+import style from '../common/common.module.css';
+import { isBlock } from 'typescript';
 // import { init, dispose, LineType } from 'klinecharts';
 // import getLanguageOption from '../../utils/getLanguageOption';
 // import getInitialDataList from '../../utils/getInitialDataList';
@@ -293,9 +297,15 @@ export default function Main() {
   const [initialized, setInitialized] = useState(false);
   const [coinList, setCoinList] = useState([]);
   const [searchCoin, setSearchCoin] = useState('');
-  const coinData = useSelector((state) => state.stock.socketCoin);
-  const tickerCoinList = useSelector((state) => state.stock.coinList);
-  console.log('tickerCoinList?@?@?@?', tickerCoinList);
+  const [blockState, setBlockState] = useState(false);
+  const [coinName, setCoinName] = useState('');
+  const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
+  const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
+
+  // for (let i = 0; i < coinData.length; i++) {
+  //   console.log('있냐??', coinData[i].chgRate);
+  // }
+  // console.log('있냐??', coinData);
   // const newCoinData = useCoinData();
   // console.log('newCoinData??', newCoinData);
 
@@ -305,22 +315,23 @@ export default function Main() {
 
   useEffect(() => {
     const parsedTickerCoin = JSON.parse(JSON.stringify(tickerCoinList));
-    console.log('parsedTickerCoin!!!!', parsedTickerCoin);
     if (parsedTickerCoin) {
       const coinName = Object.keys(parsedTickerCoin.data.data);
       const coinInfo = Object.values(parsedTickerCoin.data.data);
-      // console.log('coinName!!!!', coinName, coinName.length);
-      // console.log('coinInfo!!!!', coinInfo, coinInfo.length);
+      // console.log(
+      //   'coinInfo??',
+      //   coinInfo[0].closing_price - coinInfo[0].prev_closing_price
+      // );
       for (let i = 0; i < coinInfo.length - 1; i++) {
         if (coinInfo[i].currency_name === undefined) {
-          // console.log('있어?', coinInfo[i].currency_name, i + 1, coinName[i]);
           coinInfo[i]['currency_name'] = coinName[i];
         }
+        // coinInfo[i]['diff_price'] =
+        //   coinInfo[i].closing_price - coinInfo[i].prev_closing_price;
       }
-
       setCoinList(coinInfo);
     }
-  }, [tickerCoinList]);
+  }, [coinData]);
 
   useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
@@ -351,19 +362,31 @@ export default function Main() {
       ? coinList
       : coinList.filter((coin) => coin.currency_name === searchCoin);
 
-  console.log('coinList??', coinList);
-
   coinList.forEach((coin) => {
-    if (coinData.symbol) {
-      if (coin.currency_name === coinData.symbol.split('_')[0]) {
-        coin.closing_price = coinData.closePrice;
-        coin.change_rate_24H = coinData.chgRate;
-        coin.trade_value_24H = coinData.value;
-      }
+    // if (coinData.symbol) {
+    if (coin.currency_name === coinData.symbol.split('_')[0]) {
+      coin.closing_price = coinData.closePrice;
+      coin.change_rate_24H = coinData.chgRate;
+      coin.trade_value_24H = coinData.value;
+      coin.change_price = coinData.closePrice - coinData.prevClosePrice;
+      coin.change_total_trade_amount = coinData.value;
     }
+    // if (coinData.symbol.split('_')[0] === 'BTC') {
+    //   console.log('coinData??', coinData.value);
+    // }
+    // }
 
-    return coin;
+    if (coinObj[coin.currency_name]) {
+      coin.currency_name = `${coinObj[coin.currency_name]} (${
+        coin.currency_name
+      }_KRW)`;
+    }
   });
+
+  if (coinList[0]) {
+    // console.log('coinList??', coinList[0]);
+  }
+  // console.log('filteredCoinList??', filteredCoinList);
 
   const options = {
     title: {
@@ -418,12 +441,38 @@ export default function Main() {
     margin: '82px 0 0 0',
   };
 
+  const RedColor = {
+    color: '#f75467',
+  };
+  const BlueColor = {
+    color: '#4386f9',
+  };
+
+  const handleDisplay = (e) => {
+    console.log('???', e.target.parentNode.parentNode.parentNode.style.display);
+    const coinclicked = e.target.parentNode.parentNode.parentNode.className;
+    const targetCoinName =
+      e.target.parentNode.parentNode.children[0].textContent;
+    let targetSiblingDivStyle =
+      e.target.parentNode.parentNode.parentNode.style.display;
+
+    setBlockState(!blockState);
+    // if (coinclicked === targetCoinName) {
+    //   console.log('!!!', targetSiblingDivStyle);
+    //   targetSiblingDivStyle = 'block';
+    // }
+  };
+
+  const headerSpace = {
+    'justify-content': 'space-evenly',
+  };
+
   const getProfile = async () => {
     try {
       const data = await window.Kakao.API.request({
         url: '/v2/user/me',
       });
-      console.log('profile data?', data);
+      // console.log('profile data?', data);
       setUserId(data.id);
       setNickName(data.properties.nickname);
       setProfileImage(data.properties.profile_image);
@@ -461,22 +510,93 @@ export default function Main() {
   // }, []);
 
   return (
-    <>
+    <ContentsWrapper>
       {/* <CanvasJSStockChart
         className='canvas-chart'
         options={options}
         containerProps={containerProps}
       /> */}
 
-      {filteredCoinList.map((coin) => {
-        return (
-          <div>
-            {coin.currency_name}
-            {coin.closing_price}
-          </div>
-        );
-      })}
-    </>
+      <TableWrapperDiv>
+        <TableHeaderDiv>
+          <TableHeaderElements>가상화폐명</TableHeaderElements>
+          <TableHeaderElements>현재가</TableHeaderElements>
+          <TableHeaderElements>변동률</TableHeaderElements>
+          <TableHeaderElements>거래금액(24H)</TableHeaderElements>
+          {/* <TableHeaderElements>시가총액</TableHeaderElements> */}
+          <TableHeaderElements style={headerSpace}>
+            <div>차트</div>
+            <div>거래</div>
+          </TableHeaderElements>
+        </TableHeaderDiv>
+
+        {filteredCoinList.length ? (
+          filteredCoinList.map((coin, idx) => (
+            <div key={coin.currency_name} className={`${coin.currency_name}`}>
+              <TableBodyWrapper>
+                <TableBodyElements>{coin.currency_name}</TableBodyElements>
+                <TableBodyElements>
+                  {Number(coin.closing_price).toLocaleString('ko-KR')}
+                </TableBodyElements>
+                <TableBodyElements>
+                  {Object.keys(coin).includes('change_rate_24H') ? (
+                    coin.change_rate_24H > 0 ? (
+                      <div style={RedColor}>
+                        {coin.change_price.toLocaleString()}원(
+                        {coin.change_rate_24H}%)
+                      </div>
+                    ) : (
+                      <div style={BlueColor}>
+                        {coin.change_price.toLocaleString()}원
+                        {coin.change_rate_24H}%
+                      </div>
+                    )
+                  ) : coin.fluctate_rate_24H > 0 ? (
+                    <div style={RedColor}>
+                      {(
+                        coin.closing_price - coin.prev_closing_price
+                      ).toLocaleString()}
+                      원(
+                      {coin.fluctate_rate_24H}%)
+                    </div>
+                  ) : (
+                    <div style={BlueColor}>
+                      {(
+                        coin.closing_price - coin.prev_closing_price
+                      ).toLocaleString()}
+                      원(
+                      {coin.fluctate_rate_24H}%)
+                    </div>
+                  )}
+                </TableBodyElements>
+                <TableBodyElements>
+                  {Object.keys(coin).includes('change_total_trade_amount')
+                    ? Math.round(
+                        coin.change_total_trade_amount
+                      ).toLocaleString()
+                    : Math.round(coin.acc_trade_value_24H).toLocaleString()}
+                  원
+                  {/* {Math.round(coin.acc_trade_value_24H).toLocaleString()} 원 */}
+                </TableBodyElements>
+                <ButtonWrapper style={headerSpace}>
+                  <Button onClick={handleDisplay}>📈</Button>
+                  <Button>💵</Button>
+                </ButtonWrapper>
+              </TableBodyWrapper>
+
+              <CoinChartWrapper
+                className={`${coin.currency_name}`}
+                style={{ display: blockState ? 'block' : 'none' }}
+              >
+                비트코인의 차트
+              </CoinChartWrapper>
+            </div>
+          ))
+        ) : (
+          <Message>검색 결과가 없습니다</Message>
+        )}
+      </TableWrapperDiv>
+    </ContentsWrapper>
   );
 
   // return (
@@ -504,3 +624,77 @@ export default function Main() {
   //   </Layout>
   // );
 }
+
+const ContentsWrapper = styled.div`
+  margin-top: 69px;
+  padding: 0 12px;
+`;
+const TableWrapperDiv = styled.div`
+  border: none;
+`;
+
+const TableHeaderDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #dcdcdc;
+`;
+
+const TableHeaderElements = styled.div`
+  width: 20%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const TableBodyWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  background: #fff;
+  cursor: pointer;
+`;
+
+const TableBodyElements = styled.div`
+  width: 20%;
+  height: 36px;
+  padding: 6px 0;
+  // text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ButtonWrapper = styled.div`
+  width: 20%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const Button = styled.button`
+  width: 16px;
+  height: 16px;
+  padding: 4px;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+`;
+
+const CoinChartWrapper = styled.div`
+  display: none;
+`;
+
+const Red = styled.div`
+  color: ${RED};
+`;
+
+const Blue = styled.div`
+  color: ${BLUE};
+`;
+
+const Message = styled.h4`
+  text-align: center;
+`;
