@@ -449,7 +449,7 @@ export default function Main() {
   };
 
   const handleDisplay = (e) => {
-    console.log('???', e.target.parentNode.parentNode.parentNode.style.display);
+    // console.log('???', e.target.parentNode.parentNode.parentNode.style.display);
     const coinclicked = e.target.parentNode.parentNode.parentNode.className;
     const targetCoinName =
       e.target.parentNode.parentNode.children[0].textContent;
