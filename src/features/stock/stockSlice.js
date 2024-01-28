@@ -14,7 +14,6 @@ const stockSlice = createSlice({
       state.coinList = action.payload;
     },
     requestCoinList: (state) => {
-      console.log('requestCoinList state??', state);
       state.requestCoin = '';
     },
     socketData: (state, action) => {

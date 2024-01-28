@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import CanvasJSReact from '@canvasjs/react-stockcharts';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from 'styled-components';
@@ -8,7 +9,7 @@ import {
   requestSocketData,
 } from '../../features/stock/stockSlice';
 import { RED, BLUE, BLACK } from '../common/style';
-import style from '../common/common.module.css';
+// import style from '../common/common.module.css';
 import { isBlock } from 'typescript';
 // import { init, dispose, LineType } from 'klinecharts';
 // import getLanguageOption from '../../utils/getLanguageOption';
@@ -289,6 +290,7 @@ export default function Main() {
   const CanvasJS = CanvasJSReact.CanvasJS;
   const CanvasJSStockChart = CanvasJSReact.CanvasJSStockChart;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const checkLogin = localStorage.getItem('accessToken');
   const [userId, setUserId] = useState('');
@@ -448,23 +450,18 @@ export default function Main() {
     color: '#4386f9',
   };
 
-  const handleDisplay = (e) => {
-    // console.log('???', e.target.parentNode.parentNode.parentNode.style.display);
-    const coinclicked = e.target.parentNode.parentNode.parentNode.className;
-    const targetCoinName =
-      e.target.parentNode.parentNode.children[0].textContent;
-    let targetSiblingDivStyle =
-      e.target.parentNode.parentNode.parentNode.style.display;
-
-    setBlockState(!blockState);
-    // if (coinclicked === targetCoinName) {
-    //   console.log('!!!', targetSiblingDivStyle);
-    //   targetSiblingDivStyle = 'block';
-    // }
+  const showChart = (e) => {
+    // console.log('show', e);
+    const clickedCoin = e.target.parentNode.parentNode.className
+      .split('(')[1]
+      .slice(0, 3);
+    navigate(`/trade/${clickedCoin}`);
   };
 
   const headerSpace = {
-    'justify-content': 'space-evenly',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
   };
 
   const getProfile = async () => {
@@ -472,7 +469,7 @@ export default function Main() {
       const data = await window.Kakao.API.request({
         url: '/v2/user/me',
       });
-      // console.log('profile data?', data);
+
       setUserId(data.id);
       setNickName(data.properties.nickname);
       setProfileImage(data.properties.profile_image);
@@ -531,10 +528,15 @@ export default function Main() {
         </TableHeaderDiv>
 
         {filteredCoinList.length ? (
-          filteredCoinList.map((coin, idx) => (
+          filteredCoinList.map((coin) => (
             <div key={coin.currency_name} className={`${coin.currency_name}`}>
               <TableBodyWrapper>
-                <TableBodyElements>{coin.currency_name}</TableBodyElements>
+                <TableBodyElements
+                  onClick={showChart}
+                  style={{ cursor: 'pointer' }}
+                >
+                  {coin.currency_name}
+                </TableBodyElements>
                 <TableBodyElements>
                   {Number(coin.closing_price).toLocaleString('ko-KR')}
                 </TableBodyElements>
@@ -579,17 +581,10 @@ export default function Main() {
                   {/* {Math.round(coin.acc_trade_value_24H).toLocaleString()} 원 */}
                 </TableBodyElements>
                 <ButtonWrapper style={headerSpace}>
-                  <Button onClick={handleDisplay}>📈</Button>
+                  <Button>📈</Button>
                   <Button>💵</Button>
                 </ButtonWrapper>
               </TableBodyWrapper>
-
-              <CoinChartWrapper
-                className={`${coin.currency_name}`}
-                style={{ display: blockState ? 'block' : 'none' }}
-              >
-                비트코인의 차트
-              </CoinChartWrapper>
             </div>
           ))
         ) : (
@@ -653,7 +648,10 @@ const TableBodyWrapper = styled.div`
   display: flex;
   align-items: center;
   background: #fff;
-  cursor: pointer;
+  // cursor: pointer;
+  :hover {
+    background: #ebebeb;
+  }
 `;
 
 const TableBodyElements = styled.div`
@@ -680,7 +678,7 @@ const Button = styled.button`
   padding: 4px;
   background: #fff;
   border: none;
-  cursor: pointer;
+  // cursor: pointer;
 `;
 
 const CoinChartWrapper = styled.div`
