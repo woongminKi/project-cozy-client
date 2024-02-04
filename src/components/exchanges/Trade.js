@@ -6,12 +6,42 @@ import {
 } from '../../features/stock/stockSlice';
 import Chart from './Chart';
 import Order from './Order';
+import styled from 'styled-components';
+import { WHITE, MAIN_COLOR_1 } from '../common/style';
 
 export default function Trade() {
   return (
-    <>
+    <TradeWrapper>
       <Chart />
       <Order />
-    </>
+    </TradeWrapper>
   );
 }
+
+const TradeWrapper = styled.div`
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  .help-button {
+    cursor: pointer;
+    position: fixed;
+    bottom: 5%;
+    right: 2%;
+    padding: 35px 25px;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    font-weight: 200;
+    color: ${WHITE};
+    background-color: ${MAIN_COLOR_1};
+    opacity: 80%;
+    transition: 0.2s;
+  }
+
+  .help-button:hover {
+    padding: 40px 30px;
+    opacity: 100%;
+    transition: 0.2s;
+  }
+`;

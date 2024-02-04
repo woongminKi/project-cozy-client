@@ -4,10 +4,6 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     user: {
-      _id: '',
-      email: '',
-      displayName: '',
-      token: '',
       asset: {
         cash: 0,
         coins: [],
@@ -19,15 +15,23 @@ const userSlice = createSlice({
     error: '',
   },
   reducers: {
-    getUserData: (state, action) => {
-      state.user = Object.assign({}, action.payload);
+    loginUserData: (state, action) => {
+      console.log('userSlice에서 loginUserData', action.payload);
+      // state.user = Object.assign({}, action.payload);
+      state.user = {
+        asset: {
+          cash: 100000000,
+          coins: [],
+        },
+        round: [],
+        transactionHistory: [],
+      };
     },
     logout: (state) => {
       state.user = {
-        _id: '',
+        uid: '',
         email: '',
         displayName: '',
-        token: '',
         asset: {
           cash: 0,
           coins: [],
@@ -36,8 +40,11 @@ const userSlice = createSlice({
         transactionHistory: [],
       };
     },
-    orderRequest: (state) => {
-      state.user = Object.assign({}, state.user);
+    orderRequest: (state, action) => {
+      console.log('주문 성공?', action.payload);
+      state.user.asset.coins.push(action.payload);
+      localStorage.setItem('order', JSON.stringify(state.user));
+      // state.user = Object.assign({}, state.user);
     },
     orderSuccess: (state, action) => {
       state.user = Object.assign({}, action.payload);
@@ -59,7 +66,7 @@ const userSlice = createSlice({
 });
 
 export const {
-  getUserData,
+  loginUserData,
   logout,
   orderRequest,
   orderSuccess,

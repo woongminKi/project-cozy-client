@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest, loginSuccess } from '../features/auth/authSlice';
 import axios from 'axios';
 import qs from 'qs';
+import { loginUserData } from '../features/user/userSlice';
 
 export default function KakaoRedirectHandler() {
   const navigate = useNavigate();
@@ -28,18 +29,41 @@ export default function KakaoRedirectHandler() {
         'https://kauth.kakao.com/oauth/token',
         payload
       );
-
+      console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
-      localStorage.setItem('accessToken', res.data.access_token);
-      localStorage.setItem('refreshToken', res.data.refresh_token);
-
+      console.log('11');
       if (!res.data.access_token) {
-        dispatch(loginRequest({ res }));
+        // dispatch(loginRequest({ res }));
+        console.log('22');
         dispatch(loginSuccess());
       }
-
+      console.log('33');
       if (res.status === 200) {
+        console.log('44');
+        const data = await window.Kakao.API.request({
+          url: '/v2/user/me',
+        });
+        console.log('로그인 후 유저 데이터??', data);
+        dispatch(
+          loginRequest({
+            uid: data.id,
+            user_name: data.properties.nickname,
+            user_image: data.properties.profile_image,
+            accessToken: res.data.access_token,
+            refreshToken: res.data.refresh_token,
+            accessTokenExpiresIn: res.data.expires_in,
+            refreshTokenExpiresIn: res.data.refresh_token_expires_in,
+          })
+        );
+        dispatch(
+          loginUserData({
+            uid: data.id,
+            user_name: data.properties.nickname,
+            user_image: data.properties.profile_image,
+          })
+        );
+        sessionStorage.setItem('access_token', res.data.access_token);
         navigate('/main');
       }
     } catch (err) {

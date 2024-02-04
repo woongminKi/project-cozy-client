@@ -8,9 +8,11 @@ import {
   requestCoinList,
   requestSocketData,
 } from '../../features/stock/stockSlice';
+import SettingModal from '../modal/SettingModal';
 import { RED, BLUE, BLACK } from '../common/style';
 // import style from '../common/common.module.css';
 import { isBlock } from 'typescript';
+import { loginRequest, loginSuccess } from '../../features/auth/authSlice';
 // import { init, dispose, LineType } from 'klinecharts';
 // import getLanguageOption from '../../utils/getLanguageOption';
 // import getInitialDataList from '../../utils/getInitialDataList';
@@ -292,7 +294,10 @@ export default function Main() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const checkLogin = localStorage.getItem('accessToken');
+  const checkLogin = localStorage.getItem('checkLogin');
+  // const refreshToken = localStorage.getItem('refreshToken');
+  // const accessTokenExpiresIn = localStorage.getItem('accessTokenExpiresIn');
+  // const refreshTokenExpiresIn = localStorage.getItem('refreshTokenExpiresIn');
   const [userId, setUserId] = useState('');
   const [nickName, setNickName] = useState('');
   const [profileImage, setProfileImage] = useState('');
@@ -303,6 +308,16 @@ export default function Main() {
   const [coinName, setCoinName] = useState('');
   const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
+  const accessToken = sessionStorage.getItem('access_token');
+  const isUsed = localStorage.getItem('default_asset');
+  const [isOpenModal, setIsOpenModal] = useState({
+    isTrade: false,
+    isRequest: false,
+    isComplete: false,
+    isFailInput: false,
+    isNotAuth: false,
+    isFailTrade: false,
+  });
 
   // for (let i = 0; i < coinData.length; i++) {
   //   console.log('있냐??', coinData[i].chgRate);
@@ -353,11 +368,11 @@ export default function Main() {
     };
   }, [dispatch]);
 
-  useEffect(() => {
-    if (!checkLogin) {
-      getProfile();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!accessToken) {
+  //     navigate('/');
+  //   }
+  // }, []);
 
   const filteredCoinList =
     searchCoin === ''
@@ -385,10 +400,16 @@ export default function Main() {
     }
   });
 
-  if (coinList[0]) {
-    // console.log('coinList??', coinList[0]);
-  }
-  // console.log('filteredCoinList??', filteredCoinList);
+  const handleClickCloseModal = () => {
+    setIsOpenModal({
+      ...isOpenModal,
+      isTrade: false,
+      isComplete: false,
+      isNotAuth: false,
+      isFailInput: false,
+      isFailTrade: false,
+    });
+  };
 
   const options = {
     title: {
@@ -464,19 +485,30 @@ export default function Main() {
     justifyContent: 'space-evenly',
   };
 
-  const getProfile = async () => {
-    try {
-      const data = await window.Kakao.API.request({
-        url: '/v2/user/me',
-      });
-
-      setUserId(data.id);
-      setNickName(data.properties.nickname);
-      setProfileImage(data.properties.profile_image);
-    } catch (err) {
-      console.log('Get profile Error:', err);
-    }
-  };
+  // const getProfile = async () => {
+  //   try {
+  //     const data = await window.Kakao.API.request({
+  //       url: '/v2/user/me',
+  //     });
+  //     console.log('로그인 후 유저 데이터??', data);
+  //     dispatch(
+  //       loginRequest({
+  //         uid: data.id,
+  //         user_name: data.properties.nickname,
+  //         user_image: data.properties.profile_image,
+  //         // accessToken,
+  //         // refreshToken,
+  //         // accessTokenExpiresIn,
+  //         // refreshTokenExpiresIn,
+  //       })
+  //     );
+  //     setUserId(data.id);
+  //     setNickName(data.properties.nickname);
+  //     setProfileImage(data.properties.profile_image);
+  //   } catch (err) {
+  //     console.log('Get profile Error:', err);
+  //   }
+  // };
 
   // useEffect(() => {
   //   // chart = init('coin-chart');
@@ -513,6 +545,8 @@ export default function Main() {
         options={options}
         containerProps={containerProps}
       /> */}
+
+      {!isUsed ? <SettingModal onClose={handleClickCloseModal} /> : ''}
 
       <TableWrapperDiv>
         <TableHeaderDiv>

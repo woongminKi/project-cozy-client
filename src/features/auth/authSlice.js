@@ -4,6 +4,11 @@ const initialState = {
   isLoggedIn: false,
   isSignUp: false,
   loginStatus: false,
+  user: {
+    uid: '',
+    user_name: '',
+    user_image: '',
+  },
   error: null,
 };
 
@@ -11,25 +16,26 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    loginRequest: (state) => {
-      console.log('loginRequest??', state);
+    loginRequest: (state, action) => {
       state.loginStatus = false;
       state.isLoggedIn = false;
+      console.log('loginSuccess action payload??', action.payload);
+      state.user = action.payload;
     },
     loginSuccess: (state, action) => {
       state.loginStatus = true;
-      const { message } = action.payload;
-
       state.isLoggedIn = true;
-      state.isSignUp = message === '유저 등록 성공' ? true : false;
+      // const { message } = action.payload;
+      // state.isSignUp = message === '유저 등록 성공' ? true : false;
     },
     loginFail: (state, action) => {
-      const { message, status } = action.payload.response.data;
+      console.log('login fail??', action.payload);
+      // const { message, status } = action.payload.response.data;
 
-      state.error = {
-        message,
-        status,
-      };
+      // state.error = {
+      //   message,
+      //   status,
+      // };
 
       state.isLoggedIn = false;
       state.error = 'login error';

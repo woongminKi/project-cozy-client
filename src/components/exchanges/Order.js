@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
+import { orderRequest } from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const coinList = useSelector((state) => state.stock.coinList.data.data);
   const { currencyName } = useParams();
-  const coinList = useSelector((state) => state.stock.coinList);
-  console.log('??', coinList.data.data[currencyName]);
   const [isBuy, setIsBuy] = useState(true);
   const [unitsTraded, setUnitsTraded] = useState('');
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(
-    coinList.data.data[currencyName].closing_price
+    coinList[currencyName].closing_price
   );
   // const coin = coinList.data.data[currencyName];
 
@@ -37,6 +38,7 @@ export default function Order() {
   let coin = 10000000;
   let cash = 50000000;
   const buyCoinList = localStorage.getItem('coin-list');
+  const isLoggedIn = sessionStorage.getItem('access_token');
 
   useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
@@ -113,6 +115,10 @@ export default function Order() {
     });
   };
 
+  const goLogInPage = () => {
+    navigate('/login');
+  };
+
   const handleClickTrade = () => {
     if (isBuy && cash - total < 0) {
       setIsOpenModal({
@@ -134,18 +140,16 @@ export default function Order() {
       return;
     }
 
-    // dispatch(
-    //   orderRequest({
-    //     transactionDate: new Date(),
-    //     currencyName,
-    //     price: Number(currentCurrencyPrice),
-    //     unitsTraded: Number(unitsTraded),
-    //     total,
-    //     token,
-    //     isBuy,
-    //     _id,
-    //   })
-    // );
+    dispatch(
+      orderRequest({
+        transactionDate: new Date(),
+        currencyName,
+        price: Number(currentCurrencyPrice),
+        unitsTraded: Number(unitsTraded),
+        total,
+        isBuy,
+      })
+    );
 
     setIsOpenModal({
       ...isOpenModal,
@@ -233,6 +237,18 @@ export default function Order() {
           >
             {isBuy ? '매수하기' : '매도하기'}
           </TradeButton>
+          {/* {isLoggedIn ? (
+            <TradeButton
+              type='button'
+              className='trade-button'
+              onClick={handleClickOpenTradeModal}
+              style={{ backgroundColor: isBuy ? '#f75467' : '#4386f9' }}
+            >
+              {isBuy ? '매수하기' : '매도하기'}
+            </TradeButton>
+          ) : (
+            <LoginButton onClick={goLogInPage}>로그인 하기</LoginButton>
+          )} */}
         </OrderBoxWrapper>
       </OrderWrapper>
       {(isTrade || isComplete || isNotAuth || isFailInput || isFailTrade) && (
@@ -299,6 +315,24 @@ const ToggleTradeButton = styled.div`
   }
 `;
 const TradeButton = styled.button`
+  cursor: pointer;
+  margin-top: 30px;
+  height: 80px;
+  border-style: none;
+  border-radius: 0.2rem;
+  background-color: #f75467;
+  color: ${WHITE};
+  font-size: 20px;
+  font-weight: bold;
+  transition: 0.2s;
+
+  :hover {
+    height: 90px;
+    font-size: 25px;
+    transition: 0.2s;
+  }
+`;
+const LoginButton = styled.button`
   cursor: pointer;
   margin-top: 30px;
   height: 80px;
