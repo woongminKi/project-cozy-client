@@ -7,16 +7,15 @@ import styled from 'styled-components';
 export default function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const defaultAsset = localStorage.getItem('default_asset');
 
   return (
     <>
       <StyledHeader>
         <CozyNavLink to='/'>COZY</CozyNavLink>
         <StyledNavLink to='/main'>거래소</StyledNavLink>
-        <StyledNavLink to='/assets'>자산현황</StyledNavLink>
-        <StyledNavLink to='/transaction-history'>거래내역</StyledNavLink>
-        <StyledNavLink to='/mypage'>마이페이지</StyledNavLink>
-        <StyledNavLink to='/login'>로그인</StyledNavLink>
+        <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
+        <div>{Number(defaultAsset).toLocaleString()}원</div>
       </StyledHeader>
     </>
   );

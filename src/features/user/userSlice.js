@@ -8,7 +8,6 @@ const userSlice = createSlice({
         cash: 0,
         coins: [],
       },
-      round: [],
       transactionHistory: [],
     },
     isOpenHelpModal: false,
@@ -23,7 +22,6 @@ const userSlice = createSlice({
           cash: 100000000,
           coins: [],
         },
-        round: [],
         transactionHistory: [],
       };
     },
@@ -36,14 +34,20 @@ const userSlice = createSlice({
           cash: 0,
           coins: [],
         },
-        round: [],
         transactionHistory: [],
       };
     },
     orderRequest: (state, action) => {
+      let currentMoney = localStorage.getItem('default_asset');
       console.log('주문 성공?', action.payload);
+      state.user.asset.cash =
+        Number(currentMoney) - Number(action.payload.orderPrice);
       state.user.asset.coins.push(action.payload);
       localStorage.setItem('order', JSON.stringify(state.user));
+      localStorage.setItem(
+        'default_asset',
+        Number(currentMoney) - Number(action.payload.orderPrice)
+      );
       // state.user = Object.assign({}, state.user);
     },
     orderSuccess: (state, action) => {

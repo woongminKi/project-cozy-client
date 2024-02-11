@@ -1,23 +1,37 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { WHITE, BLACK, MAIN_COLOR_1 } from '../common/style';
 
 export default function SettingModal({ onTrade, onClose, children }) {
-  console.log('!!!', onClose);
+  console.log('??', onClose);
+  const [show, setShow] = useState(true);
   let defaultAsset = '100000000';
+  const ref = useRef(defaultAsset);
+
   const handleDefaultAsset = (e) => {
-    console.log('??', e.target.value);
     defaultAsset = e.target.value;
     localStorage.setItem('default_asset', defaultAsset);
+    // console.log('??', e.target.value);
   };
-  const setAsset = () => {};
+  const setAsset = () => {
+    setShow(false);
+    console.log('show?', show);
+    if (ref.current) {
+      // ref.current.setAttribute('value', defaultAsset)
+      localStorage.setItem('default_asset', defaultAsset);
+    }
+    if (!show) {
+      this.setAttribute('display', 'none');
+    }
+  };
   return (
     <>
       <Dimmed onClick={onClose} />
       <CheckModalWrapper>
         <Div>연습할 초기 자산을 설정하세요</Div>
-        <Select onChange={handleDefaultAsset()}>
+        <Select onChange={handleDefaultAsset}>
+          <option value='default'>클릭해주세요</option>
           <option value='100000000'>1억원</option>
           <option value='200000000'>2억원</option>
           <option value='300000000'>3억원</option>

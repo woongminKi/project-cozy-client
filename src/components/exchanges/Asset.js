@@ -25,14 +25,13 @@ export default function Asset() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { displayName, asset } = useSelector((state) => state.user.user);
-  // console.log('displayName??', displayName);
-  // console.log('asset??', asset);
   const isOpenHelpModal = useSelector((state) => state.user.isOpenHelpModal);
   const tickerCoinList = useSelector((state) => state.stock.coinList.data.data);
-  // console.log('tickerCoinList??', tickerCoinList);
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  const accessToken = sessionStorage.getItem('access_token');
-  const ownedCoinList = asset.coins;
+
+  let ownedCoinList = localStorage.getItem('order');
+  if (!ownedCoinList) {
+    ownedCoinList = [];
+  }
   const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
 
   const [searchCoin, setSearchCoin] = useState('');
@@ -43,7 +42,7 @@ export default function Asset() {
   const [isSortBtnClick, setIsSortBtnClick] = useState(false);
   const [isAscendSort, setIsAscendSort] = useState({
     isName: true,
-    isLeftMoney: true,
+    isCoinCount: true,
     isAvgPrice: true,
     isBoughtPrice: true,
     isEvaluatedPrice: true,
@@ -52,7 +51,7 @@ export default function Asset() {
   });
   const {
     isName,
-    isLeftMoney,
+    isCoinCount,
     isAvgPrice,
     isBoughtPrice,
     isEvaluatedPrice,
@@ -352,10 +351,6 @@ export default function Asset() {
     const parsedTickerCoin = JSON.parse(JSON.stringify(tickerCoinList));
     const coinName = Object.keys(parsedTickerCoin);
     const coinInfo = Object.values(parsedTickerCoin);
-    console.log('coinName??', coinName);
-    console.log('coinInfo??', coinInfo);
-    // coinName.pop();
-    // coinInfo.pop();
 
     for (let i = 0; i < coinInfo.length - 1; i++) {
       coinInfo[i].currency_name = coinName[i];
@@ -365,70 +360,53 @@ export default function Asset() {
   }, [tickerCoinList]);
 
   useEffect(() => {
-    const parsedCoinList = JSON.parse(JSON.stringify(ownedCoinList));
-    console.log('ownedCoinList?', ownedCoinList);
-    for (let i = 0; i < parsedCoinList.length; i++) {
-      parsedCoinList[i].bought_price =
-        parsedCoinList[i].quantity * parsedCoinList[i].averagePrice;
-    }
+    if (ownedCoinList) {
+      const parsedCoinList = JSON.parse(ownedCoinList);
+      const { coins } = parsedCoinList.asset;
 
-    setNewCoinList(parsedCoinList);
+      setNewCoinList(coins);
+    }
   }, [ownedCoinList]);
 
-  const filteredCoinList =
-    searchCoin === ''
-      ? coinList
-      : coinList.filter((coin) => coin.currency_name === searchCoin);
+  let filteredCoinList = [];
+  for (let i = 0; i < newCoinList.length; i++) {
+    for (let j = 0; j < coinList.length - 1; j++) {
+      if (coinList[j].currency_name === newCoinList[i].currencyName) {
+        coinList[j].orderPrice = newCoinList[i].orderPrice;
+        coinList[j].bought_price = newCoinList[i].price;
+        coinList[j].transactionDate = newCoinList[i].transactionDate;
+        coinList[j].quantity = newCoinList[i].unitsTraded;
+        coinList[j].averagePrice =
+          newCoinList[i].unitsTraded * newCoinList[i].price;
 
-  // filteredCoinList.forEach((coin) => {
-  //   if (coinList) {
-  //     coinList.map((coinItem) => {
-  //       if (coin.currencyName === coinItem.currency_name) {
-  //         coin.current_price = coinItem.closing_price;
-  //         coin.evaluate_price = coin.quantity * coinItem.closing_price;
-  //         coin.evaluate_profit =
-  //           coin.quantity * coinItem.closing_price - coin.bought_price;
-  //         coin.yield_rate =
-  //           ((coin.quantity * coinItem.closing_price - coin.bought_price) /
-  //             coin.bought_price) *
-  //           100;
-  //       }
+        if (coinList[j].currency_name === socketData.name) {
+          coinList[j].current_price = socketData.price;
+          coinList[j].evaluate_price =
+            newCoinList[i].unitsTraded * socketData.price;
+          coinList[j].evaluate_profit =
+            coinList[j].quantity * socketData.price - newCoinList[i].price;
+          coinList[j].yield_rate =
+            ((coinList[j].quantity * socketData.price - newCoinList[i].price) /
+              newCoinList[i].price) *
+            100;
+        } else {
+          coinList[j].evaluate_price =
+            newCoinList[i].unitsTraded * coinList[j].closing_price;
+          coinList[j].evaluate_profit =
+            newCoinList[i].unitsTraded * coinList[j].closing_price -
+            newCoinList[i].price;
+          coinList[j].yield_rate =
+            ((newCoinList[i].unitsTraded * coinList[j].closing_price -
+              newCoinList[i].price) /
+              newCoinList[i].price) *
+            100;
+        }
 
-  //       return coin;
-  //     });
-  //   }
-
-  //   if (coin.currencyName === socketData.name) {
-  //     coin.current_price = socketData.price;
-  //     coin.evaluate_price = coin.quantity * socketData.price;
-  //     coin.evaluate_profit =
-  //       coin.quantity * socketData.price - coin.bought_price;
-  //     coin.yield_rate =
-  //       ((coin.quantity * socketData.price - coin.bought_price) /
-  //         coin.bought_price) *
-  //       100;
-  //   }
-  // });
-  coinList.forEach((coin) => {
-    // if (coinData.symbol) {
-    if (coin.currency_name === coinData.symbol.split('_')[0]) {
-      coin.closing_price = coinData.closePrice;
-      coin.change_rate_24H = coinData.chgRate;
-      coin.trade_value_24H = coinData.value;
-      coin.change_price = coinData.closePrice - coinData.prevClosePrice;
-      coin.change_total_trade_amount = coinData.value;
+        filteredCoinList.push(coinList[j]);
+      }
     }
-    // if (coinData.symbol.split('_')[0] === 'BTC') {
-    //   console.log('coinData??', coinData.value);
-    // }
-    // }
-
-    if (coinObj[coin.currency_name]) {
-      coin.currency_name = `${coinObj[coin.currency_name]} (${
-        coin.currency_name
-      }_KRW)`;
-    }
-  });
+  }
+  // console.log('filteredCoinList??', filteredCoinList);
 
   const handleClickSearch = () => {
     const coinName = document.getElementById('coin-search').value;
@@ -457,24 +435,24 @@ export default function Asset() {
     isName
       ? setRenderedAssetList(
           filteredCoinList.sort((a, b) =>
-            descendSortAboutName(a.currencyName, b.currencyName)
+            descendSortAboutName(a.currency_name, b.currency_name)
           )
         )
       : setRenderedAssetList(
           filteredCoinList.sort((a, b) =>
-            ascendSortAboutName(a.currencyName, b.currencyName)
+            ascendSortAboutName(a.currency_name, b.currency_name)
           )
         );
   };
 
-  const sortingByCurrentLeftMoney = () => {
+  const sortingByCurrentCount = () => {
     setIsSortBtnClick(true);
     setIsAscendSort({
       ...isAscendSort,
-      isLeftMoney: !isLeftMoney,
+      isCoinCount: !isCoinCount,
     });
 
-    isLeftMoney
+    isCoinCount
       ? setRenderedAssetList(
           filteredCoinList.sort((a, b) =>
             descendSortAboutMoney(a.quantity, b.quantity)
@@ -605,22 +583,17 @@ export default function Asset() {
         );
   };
 
+  const goDetail = (e) => {
+    const clickedCoin = e.target.parentNode.parentNode.className
+      .split('(')[1]
+      .slice(0, 3);
+    navigate(`/trade/${clickedCoin}`);
+  };
+
   return (
-    <>
-      {accessToken ? (
+    <AssetWrapper>
+      {
         <>
-          <SearchDiv>
-            <Input
-              onKeyUp={handleKeyUpSearch}
-              placeholder='자산구분'
-              id='coin-search'
-              type='text'
-            />
-            <SearchButton onClick={handleClickSearch}>검색</SearchButton>
-            <SearchButton onClick={handleClickRefreshFilter}>
-              전체목록 보기
-            </SearchButton>
-          </SearchDiv>
           <TitleBodyWrapper>
             <TitleWrapper>
               자산 구분
@@ -629,9 +602,9 @@ export default function Asset() {
               </SortButton>
             </TitleWrapper>
             <TitleWrapper>
-              보유 잔고
-              <SortButton onClick={sortingByCurrentLeftMoney}>
-                {isLeftMoney ? '🔼' : '🔽'}
+              보유 개수
+              <SortButton onClick={sortingByCurrentCount}>
+                {isCoinCount ? '🔼' : '🔽'}
               </SortButton>
             </TitleWrapper>
             <TitleWrapper>
@@ -675,20 +648,17 @@ export default function Asset() {
 
           {!isSortBtnClick
             ? filteredCoinList.map((coinElements) => {
-                // console.log('coinElements??', coinElements);
                 return (
-                  <div key={coinElements.currencyName}>
+                  <div key={coinElements.currency_name}>
                     <BodyWrapper>
                       <Wrapper>
-                        <CoinLink to={`/trade/${coinElements.currencyName}`}>
-                          {coinElements.currencyName}
+                        <CoinLink onClick={goDetail}>
+                          {coinElements.currency_name}
                         </CoinLink>
                       </Wrapper>
-                      {/* <Wrapper>{`${coinElements.quantity.toFixed(
-                        4
-                      )}개`}</Wrapper> */}
+                      <Wrapper>{`${coinElements.quantity}개`}</Wrapper>
 
-                      {/* <Wrapper>
+                      <Wrapper>
                         {coinElements.averagePrice.toLocaleString()}원
                       </Wrapper>
                       <Wrapper>
@@ -713,11 +683,9 @@ export default function Asset() {
                         ) : (
                           `${(coinElements.evaluate_profit = 0)}원`
                         )}
-                      </Wrapper> */}
+                      </Wrapper>
                       <Wrapper>
-                        0%
-                        {/* {coinElements.evaluate_profit !== 0 ?
-                        (
+                        {coinElements.evaluate_profit !== 0 ? (
                           coinElements.evaluate_profit > 0 ? (
                             <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
                           ) : (
@@ -725,7 +693,7 @@ export default function Asset() {
                           )
                         ) : (
                           `${(coinElements.yield_rate = 0)}%`
-                        )} */}
+                        )}
                       </Wrapper>
                     </BodyWrapper>
                     <Line />
@@ -734,18 +702,18 @@ export default function Asset() {
               })
             : renderedAssetList.map((coinElements) => {
                 return (
-                  <div key={coinElements.currencyName}>
+                  <div key={coinElements.currency_name}>
                     <BodyWrapper>
                       <Wrapper>
-                        <CoinLink to={`/trade/${coinElements.currencyName}`}>
-                          {coinElements.currencyName}
+                        <CoinLink onClick={goDetail}>
+                          {coinElements.currency_name}
                         </CoinLink>
                       </Wrapper>
-                      {/* <Wrapper>{`${coinElements.quantity.toFixed(
+                      <Wrapper>{`${coinElements.quantity.toFixed(
                         4
-                      )}개`}</Wrapper> */}
+                      )}개`}</Wrapper>
 
-                      {/* <Wrapper>
+                      <Wrapper>
                         {coinElements.averagePrice.toLocaleString()}원
                       </Wrapper>
                       <Wrapper>
@@ -780,10 +748,9 @@ export default function Asset() {
                         ) : (
                           `${(coinElements.evaluate_profit = 0)}원`
                         )}
-                      </Wrapper> */}
+                      </Wrapper>
                       <Wrapper>
-                        0%
-                        {/* {coinElements.evaluate_profit !== 0 ? (
+                        {coinElements.evaluate_profit !== 0 ? (
                           coinElements.evaluate_profit > 0 ? (
                             <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
                           ) : (
@@ -791,7 +758,7 @@ export default function Asset() {
                           )
                         ) : (
                           `${(coinElements.yield_rate = 0)}%`
-                        )} */}
+                        )}
                       </Wrapper>
                     </BodyWrapper>
                     <Line />
@@ -799,14 +766,7 @@ export default function Asset() {
                 );
               })}
         </>
-      ) : (
-        <>
-          <Message>로그인 후 이용 가능한 서비스입니다.</Message>
-          {/* <LoginButton className='login' onClick={signInWithGoogle}>
-            구글 로그인
-          </LoginButton> */}
-        </>
-      )}
+      }
 
       {isOpenHelpModal && (
         <HelpModal onClose={() => dispatch(closeHelpModal())}>
@@ -836,9 +796,13 @@ export default function Asset() {
           </>
         </HelpModal>
       )}
-    </>
+    </AssetWrapper>
   );
 }
+
+const AssetWrapper = styled.div`
+  margin-top: 70px;
+`;
 
 const Anchor = styled.span`
   display: block;
@@ -882,15 +846,23 @@ const TitleBodyWrapper = styled(BodyWrapper)`
 `;
 
 const TitleWrapper = styled.div`
-  margin: 0px 40px;
+  // margin: 0px 40px;
   color: ${BLACK};
-  text-align: center;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 `;
 
 const Wrapper = styled.div`
   color: ${BLACK};
   width: 100%;
-  text-align: center;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 `;
 
 const Red = styled(Wrapper)`
@@ -941,12 +913,6 @@ const Button = styled.button`
   }
 `;
 
-const LoginButton = styled(Button)`
-  width: 100px;
-  display: block;
-  margin: auto;
-`;
-
 const SortButton = styled(Button)`
   padding: 0px;
   margin-right: 0px;
@@ -968,10 +934,8 @@ const Line = styled.div`
   background-color: ${LIGHT_GREY};
 `;
 
-const CoinLink = styled(NavLink)`
-  width: 20%;
-  color: ${BLACK};
-  text-decoration: none;
+const CoinLink = styled.div`
+  cursor: pointer;
 `;
 
 const SearchDiv = styled.div`

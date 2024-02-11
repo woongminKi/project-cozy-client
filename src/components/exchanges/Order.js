@@ -34,9 +34,26 @@ export default function Order() {
     isFailInput,
     isFailTrade,
   } = isOpenModal;
-  const total = Number(currentCurrencyPrice) * Number(unitsTraded);
-  let coin = 10000000;
-  let cash = 50000000;
+  const orderPrice = Number(currentCurrencyPrice) * Number(unitsTraded);
+  // let coin = 1000;
+  let coin = 0;
+  let avgOrderPrice = 0;
+  const coinArray = localStorage.getItem('order');
+  // console.log('?', coinArray);
+
+  if (coinArray !== null) {
+    const coinArrParsed = JSON.parse(coinArray);
+    console.log('?', coinArrParsed);
+    coinArrParsed.asset.coins.forEach((item) => {
+      if (item.currencyName === currencyName) {
+        coin += 1;
+        // avgOrderPrice += Number(item.orderPrice);
+      }
+    });
+    // console.log('@@', avgOrderPrice);
+  }
+
+  let cash = localStorage.getItem('default_asset');
   const buyCoinList = localStorage.getItem('coin-list');
   const isLoggedIn = sessionStorage.getItem('access_token');
 
@@ -80,15 +97,6 @@ export default function Order() {
   const handleClickOpenTradeModal = (e) => {
     e.preventDefault();
 
-    // if (!isLoggedIn) {
-    //   setIsOpenModal({
-    //     ...isOpenModal,
-    //     isNotAuth: true,
-    //   });
-
-    //   return;
-    // }
-
     if (unitsTraded === '' || Number(unitsTraded) < 0.0001) {
       setIsOpenModal({
         ...isOpenModal,
@@ -115,12 +123,8 @@ export default function Order() {
     });
   };
 
-  const goLogInPage = () => {
-    navigate('/login');
-  };
-
   const handleClickTrade = () => {
-    if (isBuy && cash - total < 0) {
+    if (isBuy && cash - orderPrice < 0) {
       setIsOpenModal({
         ...isOpenModal,
         isTrade: false,
@@ -146,7 +150,7 @@ export default function Order() {
         currencyName,
         price: Number(currentCurrencyPrice),
         unitsTraded: Number(unitsTraded),
-        total,
+        orderPrice,
         isBuy,
       })
     );
@@ -170,12 +174,12 @@ export default function Order() {
           <span className='my-asset'>
             보유 {currencyName}:{' '}
             {/* {coin ? coin.quantity.toFixed(4).toLocaleString() : 0} 개 */}
-            {coin ? coin : 0} 개
+            {coin ? Math.round(coin).toLocaleString() : 0} 개
           </span>
           <span className='my-asset'>
             평균매수가:{' '}
             {/* {coin ? Math.round(coin.averagePrice).toLocaleString() : 0} 원 */}
-            {coin ? coin : 0} 원
+            {coin ? Math.round(coin).toLocaleString() : 0} 원
           </span>
         </AssetWrapper>
         <OrderBoxWrapper>
@@ -222,7 +226,7 @@ export default function Order() {
                   type='text'
                   placeholder='총액'
                   className='order-input'
-                  value={total.toLocaleString()}
+                  value={orderPrice.toLocaleString()}
                   readOnly
                 />
               </div>

@@ -308,7 +308,6 @@ export default function Main() {
   const [coinName, setCoinName] = useState('');
   const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
-  const accessToken = sessionStorage.getItem('access_token');
   const isUsed = localStorage.getItem('default_asset');
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
@@ -317,7 +316,17 @@ export default function Main() {
     isFailInput: false,
     isNotAuth: false,
     isFailTrade: false,
+    isClicked: false,
   });
+  const {
+    isTrade,
+    isRequest,
+    isComplete,
+    isNotAuth,
+    isFailInput,
+    isFailTrade,
+    isClicked,
+  } = isOpenModal;
 
   // for (let i = 0; i < coinData.length; i++) {
   //   console.log('있냐??', coinData[i].chgRate);
@@ -472,7 +481,6 @@ export default function Main() {
   };
 
   const showChart = (e) => {
-    // console.log('show', e);
     const clickedCoin = e.target.parentNode.parentNode.className
       .split('(')[1]
       .slice(0, 3);
