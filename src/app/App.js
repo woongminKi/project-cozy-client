@@ -6,15 +6,16 @@ import Header from '../components/common/Header';
 import Login from '../components/Login';
 import Asset from '../components/exchanges/Asset';
 import KakaoRedirectHandler from '../components/KakaoRedirectHandler';
+import '../fonts/Poppins-Light.ttf';
 
 function App() {
   const location = useLocation();
 
   return (
     <>
-      {location.pathname !== '/' && <Header />}
+      <Header />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Main />} />
         <Route path='/main' element={<Main />} />
         <Route path='/trade/:currencyName' element={<Trade />} />
         <Route path='/login' element={<Login />} />

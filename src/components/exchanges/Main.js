@@ -8,15 +8,23 @@ import {
   requestCoinList,
   requestSocketData,
 } from '../../features/stock/stockSlice';
+import {
+  ascendSortAboutName,
+  ascendSortAboutMoney,
+  descendSortAboutName,
+  descendSortAboutMoney,
+} from '../../utils/sort';
 import SettingModal from '../modal/SettingModal';
-import { RED, BLUE, BLACK } from '../common/style';
-// import style from '../common/common.module.css';
-import { isBlock } from 'typescript';
-import { loginRequest, loginSuccess } from '../../features/auth/authSlice';
-// import { init, dispose, LineType } from 'klinecharts';
-// import getLanguageOption from '../../utils/getLanguageOption';
-// import getInitialDataList from '../../utils/getInitialDataList';
-// import Layout from '../common/Layout';
+import {
+  WHITE,
+  MAIN_COLOR_1,
+  MAIN_COLOR_3,
+  BREAK_POINT_MOBILE,
+  TABLE_HEADER_FONT_COLOR,
+  FONT_COLOR,
+  BUTTON_COLOR,
+  BLACK,
+} from '../common/style';
 
 const types = [
   { key: 'candle_solid', text: '캔들' },
@@ -288,24 +296,18 @@ export default function Main() {
     SWAP: '트러스트스왑',
     CELR: '셀러네트워크',
   };
-  // let chart;
-  const CanvasJS = CanvasJSReact.CanvasJS;
-  const CanvasJSStockChart = CanvasJSReact.CanvasJSStockChart;
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  const checkLogin = localStorage.getItem('checkLogin');
-  // const refreshToken = localStorage.getItem('refreshToken');
-  // const accessTokenExpiresIn = localStorage.getItem('accessTokenExpiresIn');
-  // const refreshTokenExpiresIn = localStorage.getItem('refreshTokenExpiresIn');
-  const [userId, setUserId] = useState('');
-  const [nickName, setNickName] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [initialized, setInitialized] = useState(false);
   const [coinList, setCoinList] = useState([]);
   const [searchCoin, setSearchCoin] = useState('');
-  const [blockState, setBlockState] = useState(false);
-  const [coinName, setCoinName] = useState('');
+  const [isAscendSort, setIsAscendSort] = useState({
+    isName: true,
+    isCurrentPrice: true,
+    isRateOfChange: true,
+    isTransactionAmount: true,
+  });
+  const { isName, isCurrentPrice, isRateOfChange, isTransactionAmount } =
+    isAscendSort;
   const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
   const isUsed = localStorage.getItem('default_asset');
@@ -327,13 +329,12 @@ export default function Main() {
     isFailTrade,
     isClicked,
   } = isOpenModal;
-
-  // for (let i = 0; i < coinData.length; i++) {
-  //   console.log('있냐??', coinData[i].chgRate);
-  // }
-  // console.log('있냐??', coinData);
-  // const newCoinData = useCoinData();
-  // console.log('newCoinData??', newCoinData);
+  let isMobile = false;
+  if (window.innerWidth < 992) {
+    isMobile = true;
+  }
+  const patternEn = /[a-zA-Z]/; //영어
+  const patternKr = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; //한글
 
   useEffect(() => {
     dispatch(requestCoinList());
@@ -344,16 +345,10 @@ export default function Main() {
     if (parsedTickerCoin) {
       const coinName = Object.keys(parsedTickerCoin.data.data);
       const coinInfo = Object.values(parsedTickerCoin.data.data);
-      // console.log(
-      //   'coinInfo??',
-      //   coinInfo[0].closing_price - coinInfo[0].prev_closing_price
-      // );
       for (let i = 0; i < coinInfo.length - 1; i++) {
         if (coinInfo[i].currency_name === undefined) {
           coinInfo[i]['currency_name'] = coinName[i];
         }
-        // coinInfo[i]['diff_price'] =
-        //   coinInfo[i].closing_price - coinInfo[i].prev_closing_price;
       }
       setCoinList(coinInfo);
     }
@@ -377,19 +372,88 @@ export default function Main() {
     };
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (!accessToken) {
-  //     navigate('/');
-  //   }
-  // }, []);
+  const handleClickSearch = () => {
+    const coinName = document.getElementById('coin-search').value;
+    setSearchCoin(coinName);
+  };
 
-  const filteredCoinList =
-    searchCoin === ''
-      ? coinList
-      : coinList.filter((coin) => coin.currency_name === searchCoin);
+  const handleKeyUpSearch = (e) => {
+    const coinName = e.target.value;
+    if (e.key === 'Enter') {
+      setSearchCoin(coinName);
+    } else if (coinName.length < 1) {
+      setSearchCoin('');
+    } else {
+      setSearchCoin(coinName);
+    }
+  };
+
+  const handleClickRefreshFilter = () => {
+    document.getElementById('coin-search').value = '';
+    setSearchCoin('');
+  };
+
+  const sortingByCoinName = () => {
+    setIsAscendSort({
+      ...isAscendSort,
+      isName: !isName,
+    });
+
+    isName
+      ? coinList.sort((a, b) =>
+          descendSortAboutName(a.currency_name, b.currency_name)
+        )
+      : coinList.sort((a, b) =>
+          ascendSortAboutName(a.currency_name, b.currency_name)
+        );
+  };
+
+  const sortingByCurrentPrice = () => {
+    setIsAscendSort({
+      ...isAscendSort,
+      isCurrentPrice: !isCurrentPrice,
+    });
+
+    isCurrentPrice
+      ? coinList.sort((a, b) =>
+          descendSortAboutMoney(a.closing_price, b.closing_price)
+        )
+      : coinList.sort((a, b) =>
+          ascendSortAboutMoney(a.closing_price, b.closing_price)
+        );
+  };
+
+  const sortingByRateOfChange = () => {
+    setIsAscendSort({
+      ...isAscendSort,
+      isRateOfChange: !isRateOfChange,
+    });
+
+    isRateOfChange
+      ? coinList.sort((a, b) =>
+          descendSortAboutMoney(a.fluctate_rate_24H, b.fluctate_rate_24H)
+        )
+      : coinList.sort((a, b) =>
+          ascendSortAboutMoney(a.fluctate_rate_24H, b.fluctate_rate_24H)
+        );
+  };
+
+  const sortingByTransactionAmount = () => {
+    setIsAscendSort({
+      ...isAscendSort,
+      isTransactionAmount: !isTransactionAmount,
+    });
+
+    isTransactionAmount
+      ? coinList.sort((a, b) =>
+          descendSortAboutMoney(a.acc_trade_value_24H, b.acc_trade_value_24H)
+        )
+      : coinList.sort((a, b) =>
+          ascendSortAboutMoney(a.acc_trade_value_24H, b.acc_trade_value_24H)
+        );
+  };
 
   coinList.forEach((coin) => {
-    // if (coinData.symbol) {
     if (coin.currency_name === coinData.symbol.split('_')[0]) {
       coin.closing_price = coinData.closePrice;
       coin.change_rate_24H = coinData.chgRate;
@@ -397,17 +461,32 @@ export default function Main() {
       coin.change_price = coinData.closePrice - coinData.prevClosePrice;
       coin.change_total_trade_amount = coinData.value;
     }
-    // if (coinData.symbol.split('_')[0] === 'BTC') {
-    //   console.log('coinData??', coinData.value);
-    // }
-    // }
 
     if (coinObj[coin.currency_name]) {
-      coin.currency_name = `${coinObj[coin.currency_name]} (${
-        coin.currency_name
-      }_KRW)`;
+      coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
     }
   });
+
+  let filteredCoinList = '';
+  // const filteredCoinList =
+  //   searchCoin === ''
+  //     ? coinList
+  //     : coinList.filter(
+  //         (coin) => coin.currency_name === searchCoin.toUpperCase()
+  //       );
+  if (searchCoin === '') {
+    filteredCoinList = coinList;
+  } else {
+    if (patternEn.test(searchCoin)) {
+      filteredCoinList = coinList.filter(
+        (coin) => coin.currency_name === searchCoin.toUpperCase()
+      );
+    } else if (patternKr.test(searchCoin)) {
+      filteredCoinList = coinList.filter(
+        (coin) => coin.currency_kr_name === searchCoin
+      );
+    }
+  }
 
   const handleClickCloseModal = () => {
     setIsOpenModal({
@@ -418,59 +497,6 @@ export default function Main() {
       isFailInput: false,
       isFailTrade: false,
     });
-  };
-
-  const options = {
-    title: {
-      text: 'CanvasJS StockChart',
-    },
-    charts: [
-      {
-        data: [
-          {
-            type: 'line',
-            dataPoints: [
-              { x: new Date('2018-01-01'), y: 71 },
-              { x: new Date('2018-02-01'), y: 55 },
-              { x: new Date('2018-03-01'), y: 50 },
-              { x: new Date('2018-04-01'), y: 65 },
-              { x: new Date('2018-05-01'), y: 95 },
-              { x: new Date('2018-06-01'), y: 68 },
-              { x: new Date('2018-07-01'), y: 28 },
-              { x: new Date('2018-08-01'), y: 34 },
-              { x: new Date('2018-09-01'), y: 14 },
-              { x: new Date('2018-10-01'), y: 71 },
-              { x: new Date('2018-11-01'), y: 55 },
-              { x: new Date('2018-12-01'), y: 50 },
-              { x: new Date('2019-01-01'), y: 34 },
-              { x: new Date('2019-02-01'), y: 50 },
-              { x: new Date('2019-03-01'), y: 50 },
-              { x: new Date('2019-04-01'), y: 95 },
-              { x: new Date('2019-05-01'), y: 68 },
-              { x: new Date('2019-06-01'), y: 28 },
-              { x: new Date('2019-07-01'), y: 34 },
-              { x: new Date('2019-08-01'), y: 65 },
-              { x: new Date('2019-09-01'), y: 55 },
-              { x: new Date('2019-10-01'), y: 71 },
-              { x: new Date('2019-11-01'), y: 55 },
-              { x: new Date('2019-12-01'), y: 50 },
-            ],
-          },
-        ],
-      },
-    ],
-    navigator: {
-      slider: {
-        minimum: new Date('2018-07-01'),
-        maximum: new Date('2019-06-30'),
-      },
-    },
-  };
-
-  const containerProps = {
-    width: '80%',
-    height: '450px',
-    margin: '82px 0 0 0',
   };
 
   const RedColor = {
@@ -487,184 +513,127 @@ export default function Main() {
     navigate(`/trade/${clickedCoin}`);
   };
 
-  const headerSpace = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-evenly',
-  };
-
-  // const getProfile = async () => {
-  //   try {
-  //     const data = await window.Kakao.API.request({
-  //       url: '/v2/user/me',
-  //     });
-  //     console.log('로그인 후 유저 데이터??', data);
-  //     dispatch(
-  //       loginRequest({
-  //         uid: data.id,
-  //         user_name: data.properties.nickname,
-  //         user_image: data.properties.profile_image,
-  //         // accessToken,
-  //         // refreshToken,
-  //         // accessTokenExpiresIn,
-  //         // refreshTokenExpiresIn,
-  //       })
-  //     );
-  //     setUserId(data.id);
-  //     setNickName(data.properties.nickname);
-  //     setProfileImage(data.properties.profile_image);
-  //   } catch (err) {
-  //     console.log('Get profile Error:', err);
-  //   }
+  // const headerSpace = {
+  //   display: 'flex',
+  //   alignItems: 'center',
+  //   justifyContent: 'space-evenly',
   // };
-
-  // useEffect(() => {
-  //   // chart = init('coin-chart');
-  //   // chart.setStyleOptions(getLanguageOption());
-
-  //   chart = init('real-time-k-line', {
-  //     styles: { grid: { horizontal: { style: LineType.Dashed } } },
-  //   });
-
-  //   const fetchData = async () => {
-  //     const dataList = await getInitialDataList(1);
-  //     // chart.applyNewData(dataList);
-  //     chart?.applyNewData(dataList);
-  //     setInitialized(true);
-  //   };
-  //   fetchData();
-
-  //   return () => {
-  //     dispose(chart);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   chart = init('coin-chart');
-  //   if (initialized) {
-  //     chart.updateData(newCoinData);
-  //   }
-  // }, []);
 
   return (
     <ContentsWrapper>
-      {/* <CanvasJSStockChart
-        className='canvas-chart'
-        options={options}
-        containerProps={containerProps}
-      /> */}
-
       {!isUsed ? <SettingModal onClose={handleClickCloseModal} /> : ''}
-
+      <SearchDiv>
+        <Input
+          onKeyUp={handleKeyUpSearch}
+          placeholder='자산구분'
+          id='coin-search'
+          type='text'
+        />
+        <SearchButton onClick={handleClickSearch}>검색</SearchButton>
+        {/* <SearchButton onClick={handleClickRefreshFilter}>
+          전체목록 보기
+        </SearchButton> */}
+      </SearchDiv>
       <TableWrapperDiv>
         <TableHeaderDiv>
-          <TableHeaderElements>가상화폐명</TableHeaderElements>
+          <TableHeaderElements style={{ justifyContent: 'left' }}>
+            가상화폐명(KRW)
+          </TableHeaderElements>
           <TableHeaderElements>현재가</TableHeaderElements>
           <TableHeaderElements>변동률</TableHeaderElements>
           <TableHeaderElements>거래금액(24H)</TableHeaderElements>
           {/* <TableHeaderElements>시가총액</TableHeaderElements> */}
-          <TableHeaderElements style={headerSpace}>
+          {/* <TableHeaderElements style={headerSpace}>
             <div>차트</div>
             <div>거래</div>
-          </TableHeaderElements>
+          </TableHeaderElements> */}
         </TableHeaderDiv>
 
-        {filteredCoinList.length ? (
-          filteredCoinList.map((coin) => (
-            <div key={coin.currency_name} className={`${coin.currency_name}`}>
-              <TableBodyWrapper>
-                <TableBodyElements
-                  onClick={showChart}
-                  style={{ cursor: 'pointer' }}
-                >
-                  {coin.currency_name}
-                </TableBodyElements>
-                <TableBodyElements>
-                  {Number(coin.closing_price).toLocaleString('ko-KR')}
-                </TableBodyElements>
-                <TableBodyElements>
-                  {Object.keys(coin).includes('change_rate_24H') ? (
-                    coin.change_rate_24H > 0 ? (
+        <div>
+          {filteredCoinList.length ? (
+            filteredCoinList.map((coin) => (
+              <RowWrapper
+                key={coin.currency_name}
+                className={`${coin.currency_name}`}
+              >
+                <TableBodyWrapper>
+                  <TableBodyElements
+                    onClick={showChart}
+                    style={{
+                      cursor: 'pointer',
+                      display: 'block',
+                      textAlign: 'left',
+                    }}
+                  >
+                    {coin.currency_kr_name}
+                    <div style={{ fontSize: '12px' }}>{coin.currency_name}</div>
+                  </TableBodyElements>
+                  <TableBodyElements>
+                    {Number(coin.closing_price).toLocaleString('ko-KR')}
+                  </TableBodyElements>
+                  <TableBodyElements>
+                    {Object.keys(coin).includes('change_rate_24H') ? (
+                      coin.change_rate_24H > 0 ? (
+                        <div style={RedColor}>
+                          {coin.change_price.toLocaleString()}원(
+                          {coin.change_rate_24H}%)
+                        </div>
+                      ) : (
+                        <div style={BlueColor}>
+                          {coin.change_price.toLocaleString()}원
+                          {coin.change_rate_24H}%
+                        </div>
+                      )
+                    ) : coin.fluctate_rate_24H > 0 ? (
                       <div style={RedColor}>
-                        {coin.change_price.toLocaleString()}원(
-                        {coin.change_rate_24H}%)
+                        {(
+                          coin.closing_price - coin.prev_closing_price
+                        ).toLocaleString()}
+                        원(
+                        {coin.fluctate_rate_24H}%)
                       </div>
                     ) : (
                       <div style={BlueColor}>
-                        {coin.change_price.toLocaleString()}원
-                        {coin.change_rate_24H}%
+                        {(
+                          coin.closing_price - coin.prev_closing_price
+                        ).toLocaleString()}
+                        원(
+                        {coin.fluctate_rate_24H}%)
                       </div>
-                    )
-                  ) : coin.fluctate_rate_24H > 0 ? (
-                    <div style={RedColor}>
-                      {(
-                        coin.closing_price - coin.prev_closing_price
-                      ).toLocaleString()}
-                      원(
-                      {coin.fluctate_rate_24H}%)
-                    </div>
-                  ) : (
-                    <div style={BlueColor}>
-                      {(
-                        coin.closing_price - coin.prev_closing_price
-                      ).toLocaleString()}
-                      원(
-                      {coin.fluctate_rate_24H}%)
-                    </div>
-                  )}
-                </TableBodyElements>
-                <TableBodyElements>
-                  {Object.keys(coin).includes('change_total_trade_amount')
-                    ? Math.round(
-                        coin.change_total_trade_amount
-                      ).toLocaleString()
-                    : Math.round(coin.acc_trade_value_24H).toLocaleString()}
-                  원
-                  {/* {Math.round(coin.acc_trade_value_24H).toLocaleString()} 원 */}
-                </TableBodyElements>
-                <ButtonWrapper style={headerSpace}>
+                    )}
+                  </TableBodyElements>
+                  <TableBodyElements>
+                    {Object.keys(coin).includes('change_total_trade_amount')
+                      ? Math.round(
+                          coin.change_total_trade_amount
+                        ).toLocaleString()
+                      : Math.round(coin.acc_trade_value_24H).toLocaleString()}
+                    원
+                    {/* {Math.round(coin.acc_trade_value_24H).toLocaleString()} 원 */}
+                  </TableBodyElements>
+                  {/* <ButtonWrapper style={headerSpace}>
                   <Button>📈</Button>
                   <Button>💵</Button>
-                </ButtonWrapper>
-              </TableBodyWrapper>
-            </div>
-          ))
-        ) : (
-          <Message>검색 결과가 없습니다</Message>
-        )}
+                </ButtonWrapper> */}
+                </TableBodyWrapper>
+              </RowWrapper>
+            ))
+          ) : (
+            <Message>검색 결과가 없습니다</Message>
+          )}
+        </div>
       </TableWrapperDiv>
     </ContentsWrapper>
   );
-
-  // return (
-  //   <Layout title='Bitcoin(BTC-KRW) 실시간 가격 조회'>
-  //     <div id='coin-chart' className='coin-chart' />
-  //     <div className='chart-menu-container'>
-  //       {types.map(({ key, text }) => {
-  //         return (
-  //           <button
-  //             key={key}
-  //             onClick={(_) => {
-  //               chart &&
-  //                 chart.setStyles({
-  //                   candle: {
-  //                     type: key,
-  //                   },
-  //                 });
-  //             }}
-  //           >
-  //             {text}
-  //           </button>
-  //         );
-  //       })}
-  //     </div>
-  //   </Layout>
-  // );
 }
 
 const ContentsWrapper = styled.div`
-  margin-top: 69px;
-  padding: 0 12px;
+  padding: 0 100px;
+  margin-top: 84px;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    padding: unset;
+  }
 `;
 const TableWrapperDiv = styled.div`
   border: none;
@@ -675,7 +644,16 @@ const TableHeaderDiv = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  background: #dcdcdc;
+  margin-top: 16px;
+  background: ${WHITE};
+  border-top: 1px solid #dcdcdc;
+  border-bottom: 1px solid #dcdcdc;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    height: 50px;
+    justify-content: space-between;
+    text-align: center;
+  }
 `;
 
 const TableHeaderElements = styled.div`
@@ -683,16 +661,22 @@ const TableHeaderElements = styled.div`
   height: 36px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
+  font-family: 'Poppins-Light';
+  color: ${TABLE_HEADER_FONT_COLOR};
 `;
 
 const TableBodyWrapper = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   background: #fff;
-  // cursor: pointer;
-  :hover {
-    background: #ebebeb;
+  height: 100%;
+  overflow-y: auto;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    justify-content: space-between;
+    padding: 0 10px;
   }
 `;
 
@@ -700,10 +684,20 @@ const TableBodyElements = styled.div`
   width: 20%;
   height: 36px;
   padding: 6px 0;
-  // text-align: center;
+  font-family: 'Poppins-Light';
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: right;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    text-align: center;
+  }
+`;
+
+const RowWrapper = styled.div`
+  :hover {
+    background: #ebebeb;
+  }
 `;
 
 const ButtonWrapper = styled.div`
@@ -723,18 +717,46 @@ const Button = styled.button`
   // cursor: pointer;
 `;
 
-const CoinChartWrapper = styled.div`
-  display: none;
-`;
-
-const Red = styled.div`
-  color: ${RED};
-`;
-
-const Blue = styled.div`
-  color: ${BLUE};
-`;
-
 const Message = styled.h4`
   text-align: center;
+`;
+
+const SearchDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+`;
+
+const Input = styled.input`
+  width: 100%;
+  height: 40px;
+  margin: 0px 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 24px;
+  padding-left: 20px;
+
+  :focus {
+    border: 1px solid ${FONT_COLOR} !important;
+  }
+`;
+
+const SearchButton = styled.button`
+  width: 60px;
+  height: 35px;
+  position: absolute;
+  right: 15px;
+  border-style: none;
+  border-radius: 24px;
+  background: ${BUTTON_COLOR};
+  color: ${BLACK};
+  cursor: pointer;
+  transform scale(0.98);
+
+  :hover {
+    background-color: ${MAIN_COLOR_3};
+    border-color: ${MAIN_COLOR_3};
+    color: ${WHITE};
+    transition: 0.2s;
+  }
 `;
