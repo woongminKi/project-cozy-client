@@ -507,9 +507,9 @@ export default function Main() {
   };
 
   const showChart = (e) => {
-    const clickedCoin = e.target.parentNode.parentNode.className
-      .split('(')[1]
-      .slice(0, 3);
+    const classNameArray = e.target.className.split(' ');
+    console.log('clickedCoin', classNameArray[classNameArray.length - 1]);
+    const clickedCoin = classNameArray[classNameArray.length - 1];
     navigate(`/trade/${clickedCoin}`);
   };
 
@@ -558,6 +558,7 @@ export default function Main() {
               >
                 <TableBodyWrapper>
                   <TableBodyElements
+                    className={`${coin.currency_name}`}
                     onClick={showChart}
                     style={{
                       cursor: 'pointer',
@@ -566,7 +567,12 @@ export default function Main() {
                     }}
                   >
                     {coin.currency_kr_name}
-                    <div style={{ fontSize: '12px' }}>{coin.currency_name}</div>
+                    <div
+                      className={`${coin.currency_name}`}
+                      style={{ fontSize: '12px' }}
+                    >
+                      {coin.currency_name}
+                    </div>
                   </TableBodyElements>
                   <TableBodyElements>
                     {Number(coin.closing_price).toLocaleString('ko-KR')}

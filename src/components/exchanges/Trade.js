@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  requestCoinList,
-  requestSocketData,
-} from '../../features/stock/stockSlice';
+import React from 'react';
 import Chart from './Chart';
 import Order from './Order';
 import styled from 'styled-components';
-import { WHITE, MAIN_COLOR_1 } from '../common/style';
+import { WHITE, MAIN_COLOR_1, BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Trade() {
+  let isMobile = false;
+  if (window.innerWidth < 992) {
+    isMobile = true;
+  }
   return (
     <TradeWrapper>
       <Chart />
@@ -22,6 +21,7 @@ const TradeWrapper = styled.div`
   display: flex;
   justify-content: space-around;
   align-items: center;
+  margin: 0 100px;
 
   .help-button {
     cursor: pointer;
@@ -43,5 +43,11 @@ const TradeWrapper = styled.div`
     padding: 40px 30px;
     opacity: 100%;
     transition: 0.2s;
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    display: block;
+    margin: unset;
+    width: 100%;
   }
 `;

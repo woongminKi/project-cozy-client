@@ -6,13 +6,13 @@ import HighchartsReact from 'highcharts-react-official';
 import styled from 'styled-components';
 import './chartStyle.css';
 import { candleStickRequest } from '../../features/candleStick/candleStickSlice';
+import { BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Chart() {
   const dispatch = useDispatch();
   const [time, setTime] = useState('10m');
   const { currencyName } = useParams();
   const chartData = useSelector((state) => state.candleStick.candleStick);
-  // console.log('chatData?', chartData);
 
   useEffect(() => {
     let setTimeoutID = null;
@@ -166,17 +166,6 @@ export default function Chart() {
     <>
       <ChartWrapper>
         <div className='date-selector'>
-          원하는 기간을 선택해주세요
-          <select onChange={handleChangePeriod}>
-            <option>1일</option>
-            <option>3일</option>
-            <option>10일</option>
-            <option>20일</option>
-            <option>2달</option>
-            <option>6달</option>
-            <option>3년</option>
-            <option>8년</option>
-          </select>
           <HighchartsReact
             highcharts={Highcharts}
             constructorType={'stockChart'}
@@ -189,10 +178,19 @@ export default function Chart() {
 }
 
 const ChartWrapper = styled.div`
-  width: 100vh;
+  width: 100%;
   height: 100vh;
 
   .date-selector {
-    margin: 160px 0px 50px 0px;
+    margin: 220px 0px 50px 0px;
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    width: 100%;
+    height: unset;
+
+    .date-selector {
+      margin: 90px 0px 24px 0px;
+    }
   }
 `;

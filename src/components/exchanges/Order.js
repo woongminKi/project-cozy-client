@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { MAIN_COLOR_1, WHITE } from '../common/style';
+import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
 import { orderRequest } from '../../features/user/userSlice';
 
@@ -16,7 +16,6 @@ export default function Order() {
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(
     coinList[currencyName].closing_price
   );
-  // const coin = coinList.data.data[currencyName];
 
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
@@ -35,27 +34,20 @@ export default function Order() {
     isFailTrade,
   } = isOpenModal;
   const orderPrice = Number(currentCurrencyPrice) * Number(unitsTraded);
-  // let coin = 1000;
   let coin = 0;
-  let avgOrderPrice = 0;
   const coinArray = localStorage.getItem('order');
-  // console.log('?', coinArray);
 
   if (coinArray !== null) {
     const coinArrParsed = JSON.parse(coinArray);
-    console.log('?', coinArrParsed);
     coinArrParsed.asset.coins.forEach((item) => {
       if (item.currencyName === currencyName) {
         coin += 1;
-        // avgOrderPrice += Number(item.orderPrice);
       }
     });
-    // console.log('@@', avgOrderPrice);
   }
 
   let cash = localStorage.getItem('default_asset');
   const buyCoinList = localStorage.getItem('coin-list');
-  const isLoggedIn = sessionStorage.getItem('access_token');
 
   useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
@@ -168,19 +160,19 @@ export default function Order() {
     <>
       <OrderWrapper>
         <AssetWrapper>
-          <span className='my-asset'>
+          <div className='my-asset'>
             보유 현금: {Math.round(cash).toLocaleString()} 원{' '}
-          </span>
-          <span className='my-asset'>
+          </div>
+          <div className='my-asset'>
             보유 {currencyName}:{' '}
             {/* {coin ? coin.quantity.toFixed(4).toLocaleString() : 0} 개 */}
             {coin ? Math.round(coin).toLocaleString() : 0} 개
-          </span>
-          <span className='my-asset'>
+          </div>
+          <div className='my-asset'>
             평균매수가:{' '}
             {/* {coin ? Math.round(coin.averagePrice).toLocaleString() : 0} 원 */}
             {coin ? Math.round(coin).toLocaleString() : 0} 원
-          </span>
+          </div>
         </AssetWrapper>
         <OrderBoxWrapper>
           <ToggleTradeButton>
@@ -292,6 +284,10 @@ const OrderWrapper = styled.div`
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    width: 100%;
+  }
 `;
 const OrderBoxWrapper = styled.div`
   display: flex;
@@ -355,6 +351,9 @@ const LoginButton = styled.button`
   }
 `;
 const AssetWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
   .my-asset {
     margin-right: 20px;
     border-radius: 0.2rem;

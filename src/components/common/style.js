@@ -1,4 +1,4 @@
-export const MAIN_COLOR_1 = '#181E25';
+export const MAIN_COLOR_1 = '#F0B90B';
 export const MAIN_COLOR_2 = '#F76F61';
 export const MAIN_COLOR_3 = '#FFCDC7';
 export const WHITE = '#FFFFFF';

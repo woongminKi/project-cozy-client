@@ -65,6 +65,7 @@ const StyledHeader = styled.header`
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     height: 64px;
     justify-content: space-evenly;
+    top: 12px;
   }
 `;
 
