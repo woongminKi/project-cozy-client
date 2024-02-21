@@ -454,26 +454,22 @@ export default function Main() {
   };
 
   coinList.forEach((coin) => {
-    if (coin.currency_name === coinData.symbol.split('_')[0]) {
-      coin.closing_price = coinData.closePrice;
-      coin.change_rate_24H = coinData.chgRate;
-      coin.trade_value_24H = coinData.value;
-      coin.change_price = coinData.closePrice - coinData.prevClosePrice;
-      coin.change_total_trade_amount = coinData.value;
-    }
+    if (coinData) {
+      if (coin.currency_name === coinData.symbol.split('_')[0]) {
+        coin.closing_price = coinData.closePrice;
+        coin.change_rate_24H = coinData.chgRate;
+        coin.trade_value_24H = coinData.value;
+        coin.change_price = coinData.closePrice - coinData.prevClosePrice;
+        coin.change_total_trade_amount = coinData.value;
+      }
 
-    if (coinObj[coin.currency_name]) {
-      coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
+      if (coinObj[coin.currency_name]) {
+        coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
+      }
     }
   });
 
   let filteredCoinList = '';
-  // const filteredCoinList =
-  //   searchCoin === ''
-  //     ? coinList
-  //     : coinList.filter(
-  //         (coin) => coin.currency_name === searchCoin.toUpperCase()
-  //       );
   if (searchCoin === '') {
     filteredCoinList = coinList;
   } else {
@@ -508,7 +504,6 @@ export default function Main() {
 
   const showChart = (e) => {
     const classNameArray = e.target.className.split(' ');
-    console.log('clickedCoin', classNameArray[classNameArray.length - 1]);
     const clickedCoin = classNameArray[classNameArray.length - 1];
     navigate(`/trade/${clickedCoin}`);
   };
@@ -578,7 +573,39 @@ export default function Main() {
                     {Number(coin.closing_price).toLocaleString('ko-KR')}
                   </TableBodyElements>
                   <TableBodyElements>
-                    {Object.keys(coin).includes('change_rate_24H') ? (
+                    {isMobile ? (
+                      Object.keys(coin).includes('change_rate_24H') ? (
+                        coin.change_rate_24H > 0 ? (
+                          <>
+                            <div style={RedColor}>
+                              {coin.change_price.toLocaleString()}
+                              <div>({coin.change_rate_24H}%)</div>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <div style={BlueColor}>
+                              {coin.change_price.toLocaleString()}
+                              <div>({coin.change_rate_24H}%)</div>
+                            </div>
+                          </>
+                        )
+                      ) : coin.fluctate_rate_24H > 0 ? (
+                        <div style={RedColor}>
+                          {(
+                            coin.closing_price - coin.prev_closing_price
+                          ).toLocaleString()}
+                          <div>({coin.fluctate_rate_24H}%)</div>
+                        </div>
+                      ) : (
+                        <div style={BlueColor}>
+                          {(
+                            coin.closing_price - coin.prev_closing_price
+                          ).toLocaleString()}
+                          <div>({coin.fluctate_rate_24H}%)</div>
+                        </div>
+                      )
+                    ) : Object.keys(coin).includes('change_rate_24H') ? (
                       coin.change_rate_24H > 0 ? (
                         <div style={RedColor}>
                           {coin.change_price.toLocaleString()}원(
@@ -609,18 +636,21 @@ export default function Main() {
                     )}
                   </TableBodyElements>
                   <TableBodyElements>
-                    {Object.keys(coin).includes('change_total_trade_amount')
+                    {isMobile
+                      ? Object.keys(coin).includes('change_total_trade_amount')
+                        ? Math.round(coin.change_total_trade_amount)
+                            .toLocaleString()
+                            .slice(0, -8) + '백만'
+                        : Math.round(coin.acc_trade_value_24H)
+                            .toLocaleString()
+                            .slice(0, -8) + '백만'
+                      : Object.keys(coin).includes('change_total_trade_amount')
                       ? Math.round(
                           coin.change_total_trade_amount
-                        ).toLocaleString()
-                      : Math.round(coin.acc_trade_value_24H).toLocaleString()}
-                    원
-                    {/* {Math.round(coin.acc_trade_value_24H).toLocaleString()} 원 */}
+                        ).toLocaleString() + '원'
+                      : Math.round(coin.acc_trade_value_24H).toLocaleString() +
+                        '원'}
                   </TableBodyElements>
-                  {/* <ButtonWrapper style={headerSpace}>
-                  <Button>📈</Button>
-                  <Button>💵</Button>
-                </ButtonWrapper> */}
                 </TableBodyWrapper>
               </RowWrapper>
             ))
@@ -639,6 +669,7 @@ const ContentsWrapper = styled.div`
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     padding: unset;
+    margin-top: 78px;
   }
 `;
 const TableWrapperDiv = styled.div`
@@ -678,11 +709,10 @@ const TableBodyWrapper = styled.div`
   justify-content: center;
   background: #fff;
   height: 100%;
-  overflow-y: auto;
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     justify-content: space-between;
-    padding: 0 10px;
+    padding: 8px 10px;
   }
 `;
 
@@ -696,13 +726,18 @@ const TableBodyElements = styled.div`
   justify-content: right;
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
-    text-align: center;
+    width: 25%;
+    text-align: right;
   }
 `;
 
 const RowWrapper = styled.div`
   :hover {
     background: #ebebeb;
+  }
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    // margin: 8px 0;
   }
 `;
 

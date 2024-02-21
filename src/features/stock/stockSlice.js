@@ -11,7 +11,6 @@ const stockSlice = createSlice({
   },
   reducers: {
     initialCoinList: (state, action) => {
-      // console.log('initialCoinList??', action.payload);
       state.coinList = action.payload;
     },
     requestCoinList: (state) => {

@@ -36,7 +36,7 @@ export default function Header() {
         <StyledNavLink style={{ cursor: 'unset' }}>
           {Number(defaultAsset).toLocaleString()}원
         </StyledNavLink>
-        {isMobile ? (
+        {/* {isMobile ? (
           <StyledNavLink>
             <img
               src={hamburgerIcon}
@@ -46,7 +46,7 @@ export default function Header() {
           </StyledNavLink>
         ) : (
           ''
-        )}
+        )} */}
       </StyledHeader>
     </>
   );
@@ -65,7 +65,7 @@ const StyledHeader = styled.header`
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     height: 64px;
     justify-content: space-evenly;
-    top: 12px;
+    z-index: 1;
   }
 `;
 

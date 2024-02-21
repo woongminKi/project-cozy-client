@@ -12,6 +12,7 @@ import {
   LIGHT_GREY,
   RED,
   BLUE,
+  BREAK_POINT_MOBILE,
 } from '../common/style';
 import {
   ascendSortAboutName,
@@ -354,6 +355,10 @@ export default function Asset() {
 
     for (let i = 0; i < coinInfo.length - 1; i++) {
       coinInfo[i].currency_name = coinName[i];
+
+      if (coinObj[coinName[i]]) {
+        coinInfo[i].currency_kr_name = `${coinObj[coinInfo[i].currency_name]}`;
+      }
     }
 
     setCoinList(coinInfo);
@@ -406,7 +411,6 @@ export default function Asset() {
       }
     }
   }
-  // console.log('filteredCoinList??', filteredCoinList);
 
   const handleClickSearch = () => {
     const coinName = document.getElementById('coin-search').value;
@@ -584,230 +588,360 @@ export default function Asset() {
   };
 
   const goDetail = (e) => {
-    const clickedCoin = e.target.parentNode.parentNode.className
-      .split('(')[1]
-      .slice(0, 3);
+    const classNameArray = e.target.className.split(' ');
+    const clickedCoin = classNameArray[classNameArray.length - 1];
     navigate(`/trade/${clickedCoin}`);
   };
 
   return (
+    // <AssetWrapper>
+    //   {
+    //     <>
+    //       <TitleBodyWrapper>
+    //         <TitleWrapper>
+    //           자산 구분
+    //           <SortButton onClick={sortingByCoinName}>
+    //             {isName ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           보유 개수
+    //           <SortButton onClick={sortingByCurrentCount}>
+    //             {isCoinCount ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           평균 매수가
+    //           <SortButton onClick={averageBoughtPrice}>
+    //             {isAvgPrice ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           매수 금액
+    //           <SortButton onClick={boughtPrice}>
+    //             {isBoughtPrice ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           평가 금액
+    //           <SortButton onClick={evaluatedPrice}>
+    //             {isEvaluatedPrice ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           펑가 순익
+    //           <SortButton onClick={evaluatedProfit}>
+    //             {isEvaluatedProfit ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <TitleWrapper>
+    //           수익률{' '}
+    //           <SortButton onClick={yieldRate}>
+    //             {isYieldRate ? '🔼' : '🔽'}
+    //           </SortButton>
+    //         </TitleWrapper>
+    //         <button
+    //           className='help-button'
+    //           onClick={() => dispatch(openHelpModal())}
+    //         >
+    //           도움말
+    //         </button>
+    //       </TitleBodyWrapper>
+    //       <Line />
+
+    //       {!isSortBtnClick
+    //         ? filteredCoinList.map((coinElements) => {
+    //             return (
+    //               <div key={coinElements.currency_name}>
+    //                 <BodyWrapper>
+    //                   <Wrapper>
+    //                     <CoinLink
+    //                       className={`${coinElements.currency_name}`}
+    //                       onClick={goDetail}
+    //                     >
+    //                       {coinElements.currency_name}
+    //                     </CoinLink>
+    //                   </Wrapper>
+    //                   <Wrapper>{`${coinElements.quantity}개`}</Wrapper>
+
+    //                   <Wrapper>
+    //                     {coinElements.averagePrice.toLocaleString()}원
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.bought_price.toLocaleString()}원
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_price !== 0
+    //                       ? `${coinElements.evaluate_price.toLocaleString()}원`
+    //                       : `${(coinElements.evaluate_price = 0)}원`}
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_profit ? (
+    //                       coinElements.evaluate_profit > 0 ? (
+    //                         <Red>
+    //                           {coinElements.evaluate_profit.toLocaleString()}원
+    //                         </Red>
+    //                       ) : (
+    //                         <Blue>
+    //                           {coinElements.evaluate_profit.toLocaleString()}원
+    //                         </Blue>
+    //                       )
+    //                     ) : (
+    //                       `${(coinElements.evaluate_profit = 0)}원`
+    //                     )}
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_profit !== 0 ? (
+    //                       coinElements.evaluate_profit > 0 ? (
+    //                         <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
+    //                       ) : (
+    //                         <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
+    //                       )
+    //                     ) : (
+    //                       `${(coinElements.yield_rate = 0)}%`
+    //                     )}
+    //                   </Wrapper>
+    //                 </BodyWrapper>
+    //                 <Line />
+    //               </div>
+    //             );
+    //           })
+    //         : renderedAssetList.map((coinElements) => {
+    //             return (
+    //               <div key={coinElements.currency_name}>
+    //                 <BodyWrapper>
+    //                   <Wrapper>
+    //                     <CoinLink
+    //                       className={`${coinElements.currency_name}`}
+    //                       onClick={goDetail}
+    //                     >
+    //                       {coinElements.currency_name}
+    //                     </CoinLink>
+    //                   </Wrapper>
+    //                   <Wrapper>{`${coinElements.quantity.toFixed(
+    //                     4
+    //                   )}개`}</Wrapper>
+
+    //                   <Wrapper>
+    //                     {coinElements.averagePrice.toLocaleString()}원
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.bought_price.toLocaleString()}원
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_price !== 0 ? (
+    //                       coinElements.evaluate_price > 0 ? (
+    //                         <Red>
+    //                           {coinElements.evaluate_price.toLocaleString()}원
+    //                         </Red>
+    //                       ) : (
+    //                         <Blue>
+    //                           {coinElements.evaluate_price.toLocaleString()}원
+    //                         </Blue>
+    //                       )
+    //                     ) : (
+    //                       `${(coinElements.evaluate_price = 0)}원`
+    //                     )}
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_profit ? (
+    //                       coinElements.evaluate_profit > 0 ? (
+    //                         <Red>
+    //                           {coinElements.evaluate_profit.toLocaleString()}원
+    //                         </Red>
+    //                       ) : (
+    //                         <Blue>
+    //                           {coinElements.evaluate_profit.toLocaleString()}원
+    //                         </Blue>
+    //                       )
+    //                     ) : (
+    //                       `${(coinElements.evaluate_profit = 0)}원`
+    //                     )}
+    //                   </Wrapper>
+    //                   <Wrapper>
+    //                     {coinElements.evaluate_profit !== 0 ? (
+    //                       coinElements.evaluate_profit > 0 ? (
+    //                         <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
+    //                       ) : (
+    //                         <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
+    //                       )
+    //                     ) : (
+    //                       `${(coinElements.yield_rate = 0)}%`
+    //                     )}
+    //                   </Wrapper>
+    //                 </BodyWrapper>
+    //                 <Line />
+    //               </div>
+    //             );
+    //           })}
+    //     </>
+    //   }
+
+    //   {isOpenHelpModal && (
+    //     <HelpModal onClose={() => dispatch(closeHelpModal())}>
+    //       <>
+    //         <p>현재 페이지에서는 자산현황을 볼 수 있는 페이지입니다.</p>
+    //         <p>
+    //           가지고 있는 코인이 얼마나 올랐는지 그리고 어느 정도로 이익을
+    //           냈는지 한 눈에 볼 수 있습니다.
+    //         </p>
+    //         <div>평균매수가란 ? 매수한 코인의 평균 매입가입니다.</div>
+    //         <div>
+    //           쉽게 말해서 {displayName}님이 평균적으로 얼마정도에 코인을
+    //           매수했냐 를 뜻하는 단어가 평균매수가입니다.
+    //         </div>
+    //         <p>
+    //           매수 금액이란 ? {displayName}님이 코인을 매수한 총 금액입니다.{' '}
+    //         </p>
+    //         <p>
+    //           평가 금액이란 ? 현재 코인의 시세에서 {displayName}님이 매수하신
+    //           코인의 수량이 곱해지면 평가금액이 됩니다.
+    //         </p>
+    //         <p>평가 순익이란 ? {displayName}님의 총 수익을 나타내어줍니다. </p>
+    //         <p>
+    //           수익률이란 ? {displayName}님이 얼마의 수익을 냈는지에 대한
+    //           수치입니다.
+    //         </p>
+    //       </>
+    //     </HelpModal>
+    //   )}
+    // </AssetWrapper>
     <AssetWrapper>
-      {
-        <>
-          <TitleBodyWrapper>
-            <TitleWrapper>
-              자산 구분
-              <SortButton onClick={sortingByCoinName}>
-                {isName ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              보유 개수
-              <SortButton onClick={sortingByCurrentCount}>
-                {isCoinCount ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              평균 매수가
-              <SortButton onClick={averageBoughtPrice}>
-                {isAvgPrice ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              매수 금액
-              <SortButton onClick={boughtPrice}>
-                {isBoughtPrice ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              평가 금액
-              <SortButton onClick={evaluatedPrice}>
-                {isEvaluatedPrice ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              펑가 순익
-              <SortButton onClick={evaluatedProfit}>
-                {isEvaluatedProfit ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <TitleWrapper>
-              수익률{' '}
-              <SortButton onClick={yieldRate}>
-                {isYieldRate ? '🔼' : '🔽'}
-              </SortButton>
-            </TitleWrapper>
-            <button
-              className='help-button'
-              onClick={() => dispatch(openHelpModal())}
-            >
-              도움말
-            </button>
-          </TitleBodyWrapper>
-          <Line />
-
-          {!isSortBtnClick
-            ? filteredCoinList.map((coinElements) => {
-                return (
-                  <div key={coinElements.currency_name}>
-                    <BodyWrapper>
-                      <Wrapper>
-                        <CoinLink onClick={goDetail}>
-                          {coinElements.currency_name}
-                        </CoinLink>
-                      </Wrapper>
-                      <Wrapper>{`${coinElements.quantity}개`}</Wrapper>
-
-                      <Wrapper>
-                        {coinElements.averagePrice.toLocaleString()}원
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.bought_price.toLocaleString()}원
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_price !== 0
-                          ? `${coinElements.evaluate_price.toLocaleString()}원`
-                          : `${(coinElements.evaluate_price = 0)}원`}
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_profit ? (
-                          coinElements.evaluate_profit > 0 ? (
-                            <Red>
-                              {coinElements.evaluate_profit.toLocaleString()}원
-                            </Red>
-                          ) : (
-                            <Blue>
-                              {coinElements.evaluate_profit.toLocaleString()}원
-                            </Blue>
-                          )
-                        ) : (
-                          `${(coinElements.evaluate_profit = 0)}원`
-                        )}
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_profit !== 0 ? (
-                          coinElements.evaluate_profit > 0 ? (
-                            <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
-                          ) : (
-                            <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
-                          )
-                        ) : (
-                          `${(coinElements.yield_rate = 0)}%`
-                        )}
-                      </Wrapper>
-                    </BodyWrapper>
-                    <Line />
+      {filteredCoinList.map((coinElements) => {
+        return (
+          <ContentsWrapper key={coinElements.currency_name}>
+            <ContentsHeader>
+              <div>
+                {coinElements.currency_name} ({coinElements.currency_kr_name})
+              </div>
+              <div>
+                <EvaluationProfit>
+                  <ContentsHeaderTitle>평가 손익</ContentsHeaderTitle>{' '}
+                  <div>
+                    {coinElements.evaluate_profit ? (
+                      coinElements.evaluate_profit > 0 ? (
+                        <Red>
+                          {coinElements.evaluate_profit.toLocaleString()}원
+                        </Red>
+                      ) : (
+                        <Blue>
+                          {coinElements.evaluate_profit.toLocaleString()}원
+                        </Blue>
+                      )
+                    ) : (
+                      `${(coinElements.evaluate_profit = 0)}원`
+                    )}
                   </div>
-                );
-              })
-            : renderedAssetList.map((coinElements) => {
-                return (
-                  <div key={coinElements.currency_name}>
-                    <BodyWrapper>
-                      <Wrapper>
-                        <CoinLink onClick={goDetail}>
-                          {coinElements.currency_name}
-                        </CoinLink>
-                      </Wrapper>
-                      <Wrapper>{`${coinElements.quantity.toFixed(
-                        4
-                      )}개`}</Wrapper>
+                </EvaluationProfit>
+                <ProfitRate>
+                  <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
+                  {coinElements.evaluate_profit !== 0 ? (
+                    coinElements.evaluate_profit > 0 ? (
+                      <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
+                    ) : (
+                      <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
+                    )
+                  ) : (
+                    `${(coinElements.yield_rate = 0)}%`
+                  )}
+                </ProfitRate>
+              </div>
+            </ContentsHeader>
 
-                      <Wrapper>
-                        {coinElements.averagePrice.toLocaleString()}원
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.bought_price.toLocaleString()}원
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_price !== 0 ? (
-                          coinElements.evaluate_price > 0 ? (
-                            <Red>
-                              {coinElements.evaluate_price.toLocaleString()}원
-                            </Red>
-                          ) : (
-                            <Blue>
-                              {coinElements.evaluate_price.toLocaleString()}원
-                            </Blue>
-                          )
-                        ) : (
-                          `${(coinElements.evaluate_price = 0)}원`
-                        )}
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_profit ? (
-                          coinElements.evaluate_profit > 0 ? (
-                            <Red>
-                              {coinElements.evaluate_profit.toLocaleString()}원
-                            </Red>
-                          ) : (
-                            <Blue>
-                              {coinElements.evaluate_profit.toLocaleString()}원
-                            </Blue>
-                          )
-                        ) : (
-                          `${(coinElements.evaluate_profit = 0)}원`
-                        )}
-                      </Wrapper>
-                      <Wrapper>
-                        {coinElements.evaluate_profit !== 0 ? (
-                          coinElements.evaluate_profit > 0 ? (
-                            <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
-                          ) : (
-                            <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
-                          )
-                        ) : (
-                          `${(coinElements.yield_rate = 0)}%`
-                        )}
-                      </Wrapper>
-                    </BodyWrapper>
-                    <Line />
-                  </div>
-                );
-              })}
-        </>
-      }
-
-      {isOpenHelpModal && (
-        <HelpModal onClose={() => dispatch(closeHelpModal())}>
-          <>
-            <p>현재 페이지에서는 자산현황을 볼 수 있는 페이지입니다.</p>
-            <p>
-              가지고 있는 코인이 얼마나 올랐는지 그리고 어느 정도로 이익을
-              냈는지 한 눈에 볼 수 있습니다.
-            </p>
-            <div>평균매수가란 ? 매수한 코인의 평균 매입가입니다.</div>
-            <div>
-              쉽게 말해서 {displayName}님이 평균적으로 얼마정도에 코인을
-              매수했냐 를 뜻하는 단어가 평균매수가입니다.
-            </div>
-            <p>
-              매수 금액이란 ? {displayName}님이 코인을 매수한 총 금액입니다.{' '}
-            </p>
-            <p>
-              평가 금액이란 ? 현재 코인의 시세에서 {displayName}님이 매수하신
-              코인의 수량이 곱해지면 평가금액이 됩니다.
-            </p>
-            <p>평가 순익이란 ? {displayName}님의 총 수익을 나타내어줍니다. </p>
-            <p>
-              수익률이란 ? {displayName}님이 얼마의 수익을 냈는지에 대한
-              수치입니다.
-            </p>
-          </>
-        </HelpModal>
-      )}
+            <ContentsBody>
+              <ContentsBody1>
+                <ContentsBodyElements>
+                  <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
+                  {`${coinElements.quantity}개`}
+                </ContentsBodyElements>
+                <ContentsBodyElements>
+                  <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}
+                  {coinElements.averagePrice.toLocaleString()}원
+                </ContentsBodyElements>
+              </ContentsBody1>
+              <ContentsBody2>
+                <ContentsBodyElements>
+                  <div style={{ marginRight: '8px' }}>평가 금액</div>{' '}
+                  {coinElements.evaluate_price !== 0
+                    ? `${coinElements.evaluate_price.toLocaleString()}원`
+                    : `${(coinElements.evaluate_price = 0)}원`}
+                </ContentsBodyElements>
+                <ContentsBodyElements>
+                  <div style={{ marginRight: '8px' }}>매수 금액</div>{' '}
+                  {coinElements.bought_price.toLocaleString()}원
+                </ContentsBodyElements>
+              </ContentsBody2>
+            </ContentsBody>
+          </ContentsWrapper>
+        );
+      })}
     </AssetWrapper>
   );
 }
 
 const AssetWrapper = styled.div`
-  margin-top: 70px;
+  margin-top: 98px;
+
+  @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
+    margin-top: 94px;
+  }
 `;
 
-const Anchor = styled.span`
-  display: block;
-  height: 80px;
-  visibility: hidden;
+const ContentsWrapper = styled.div`
+  padding: 16px;
+  border-top: 1px solid #dcdcdc;
+
+  &:last-child {
+    border-bottom: 1px solid #dcdcdc;
+  }
+`;
+
+const ContentsHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+`;
+
+const ContentsHeaderTitle = styled.div`
+  // width: 100%;
+  margin-right: 4px;
+  text-align: center;
+`;
+
+const EvaluationProfit = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+`;
+const ProfitRate = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+`;
+
+const ContentsBody = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const ContentsBody1 = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+`;
+const ContentsBody2 = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-around;
+`;
+const ContentsBodyElements = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 `;
 
 const BodyWrapper = styled.div`
@@ -865,11 +999,11 @@ const Wrapper = styled.div`
   text-decoration: none;
 `;
 
-const Red = styled(Wrapper)`
+const Red = styled.div`
   color: ${RED};
 `;
 
-const Blue = styled(Wrapper)`
+const Blue = styled.div`
   color: ${BLUE};
 `;
 
