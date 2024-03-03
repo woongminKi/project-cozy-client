@@ -360,6 +360,7 @@ export default function Main() {
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
+      console.log('실시간 코인?', socketCoinData);
       dispatch(requestSocketData(socketCoinData));
 
       ws.onerror = (error) => {
