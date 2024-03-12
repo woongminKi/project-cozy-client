@@ -356,6 +356,7 @@ export default function Main() {
 
   useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
+    console.log('wsss', ws);
     // const ws = new WebSocket('wss://coiniseasy.xyz:8000/ws');
 
     ws.onmessage = (event) => {
