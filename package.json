@@ -2,6 +2,7 @@
   "name": "project-cozy",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@canvasjs/charts": "^3.7.32",
     "@canvasjs/react-stockcharts": "^1.0.0",
