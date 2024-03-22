@@ -2,11 +2,11 @@
   "name": "project-cozy",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "dependencies": {
     "@canvasjs/charts": "^3.7.32",
     "@canvasjs/react-stockcharts": "^1.0.0",
     "@canvasjs/stockcharts": "^1.7.32",
+    "@craco/craco": "^7.1.0",
     "@reduxjs/toolkit": "^2.0.1",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
@@ -43,10 +43,9 @@
     "workbox-streams": "^6.6.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test"
   },
   "eslintConfig": {
     "extends": [
