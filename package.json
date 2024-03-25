@@ -43,7 +43,7 @@
     "workbox-streams": "^6.6.0"
   },
   "scripts": {
-    "start": "export WDS_SOCKET_PORT=443 && craco start",
+    "start": "craco start",
     "build": "craco build",
     "test": "craco test"
   },
