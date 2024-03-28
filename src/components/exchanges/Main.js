@@ -339,7 +339,6 @@ export default function Main() {
   const patternKr = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; //한글
 
   useEffect(() => {
-    dispatch(loginRequest());
     dispatch(requestCoinList());
   }, [dispatch]);
 
@@ -358,6 +357,7 @@ export default function Main() {
   }, [coinData]);
 
   useEffect(() => {
+    dispatch(loginRequest());
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
     console.log('wsss', ws);
     // const ws = new WebSocket('wss://localhost:8000/ws');
