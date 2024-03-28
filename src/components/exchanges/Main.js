@@ -8,6 +8,8 @@ import {
   requestCoinList,
   requestSocketData,
 } from '../../features/stock/stockSlice';
+import { loginRequest } from '../../features/auth/authSlice';
+
 import {
   ascendSortAboutName,
   ascendSortAboutMoney,
@@ -337,6 +339,7 @@ export default function Main() {
   const patternKr = /[ㄱ-ㅎ|ㅏ-ㅣ|가-힣]/; //한글
 
   useEffect(() => {
+    dispatch(loginRequest());
     dispatch(requestCoinList());
   }, [dispatch]);
 
