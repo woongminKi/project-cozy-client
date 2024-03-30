@@ -14,13 +14,13 @@ export default function Login() {
     <>
       <div>회원가입</div>;
       <ButtonWrapper className='login-button-wrapper'>
-        <button>네이버</button>
+        {/* <button>네이버</button> */}
         <a href={KAKAO_AUTH_URL}>
           <KakaoBtn>
             <img src={kakaoImage} alt='kakao-login' />
           </KakaoBtn>
         </a>
-        <button>구글</button>
+        {/* <button>구글</button> */}
       </ButtonWrapper>
     </>
   );

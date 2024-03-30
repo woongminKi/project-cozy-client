@@ -29,18 +29,14 @@ export default function KakaoRedirectHandler() {
         'https://kauth.kakao.com/oauth/token',
         payload
       );
-      console.log('로그인 res??', res);
+      // console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
-      console.log('11');
       if (!res.data.access_token) {
-        // dispatch(loginRequest({ res }));
-        console.log('22');
+        dispatch(loginRequest({ res }));
         dispatch(loginSuccess());
       }
-      console.log('33');
       if (res.status === 200) {
-        console.log('44');
         const data = await window.Kakao.API.request({
           url: '/v2/user/me',
         });

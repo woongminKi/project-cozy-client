@@ -17,6 +17,11 @@ function App() {
         <Route path='/main' element={<Main />} />
         <Route path='/trade/:currencyName' element={<Trade />} />
         <Route path='/assets' element={<Asset />} />
+        <Route path='/login' element={<Login />} />
+        <Route
+          path='/oauth/kakao/callback'
+          element={<KakaoRedirectHandler />}
+        />
       </Routes>
     </>
   );

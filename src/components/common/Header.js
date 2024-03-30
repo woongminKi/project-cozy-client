@@ -14,6 +14,7 @@ import hamburgerIcon from '../../images/icon-hamburger.svg';
 export default function Header() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const accessToken = sessionStorage.getItem('access_token');
   const defaultAsset = localStorage.getItem('default_asset');
   let isMobile = false;
   if (window.innerWidth < 992) {
@@ -27,15 +28,32 @@ export default function Header() {
     alignItems: 'center',
   };
 
+  function logout() {
+    sessionStorage.removeItem('access_token');
+    navigate('/main');
+  }
+
   return (
     <>
       <StyledHeader>
         {isMobile ? '' : <CozyNavLink to='/'>COZY</CozyNavLink>}
-        <StyledNavLink to='/main'>거래소</StyledNavLink>
-        <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
-        <StyledNavLink style={{ cursor: 'unset' }}>
-          {Number(defaultAsset).toLocaleString()}원
-        </StyledNavLink>
+        {accessToken ? (
+          <>
+            <StyledNavLink to='/main'>거래소</StyledNavLink>
+            <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
+            <StyledNavLink style={{ cursor: 'unset' }}>
+              {Number(defaultAsset).toLocaleString()}원
+            </StyledNavLink>
+            <StyledNavLink onClick={logout}>로그아웃</StyledNavLink>
+          </>
+        ) : (
+          <>
+            <StyledNavLink to='/'>거래소</StyledNavLink>
+            <StyledNavLink to='/'>자산 현황</StyledNavLink>
+            <StyledNavLink to='/login'>로그인</StyledNavLink>
+          </>
+        )}
+
         {/* {isMobile ? (
           <StyledNavLink>
             <img

@@ -182,7 +182,7 @@ const ChartWrapper = styled.div`
   height: 100vh;
 
   .date-selector {
-    margin: 220px 0px 50px 0px;
+    margin: 227px 24px 50px 0px;
   }
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {

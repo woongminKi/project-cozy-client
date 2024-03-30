@@ -357,7 +357,7 @@ export default function Main() {
   }, [coinData]);
 
   useEffect(() => {
-    dispatch(loginRequest());
+    // dispatch(loginRequest()); // /health로 체크하는 부분
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
     console.log('wsss', ws);
     // const ws = new WebSocket('wss://localhost:8000/ws');
@@ -672,7 +672,7 @@ export default function Main() {
 }
 
 const ContentsWrapper = styled.div`
-  padding: 0 100px;
+  // padding: 0 100px;
   margin-top: 84px;
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
@@ -687,7 +687,8 @@ const TableWrapperDiv = styled.div`
 const TableHeaderDiv = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  // justify-content: center;
+  justify-content: space-around;
   width: 100%;
   margin-top: 16px;
   background: ${WHITE};
@@ -714,7 +715,7 @@ const TableHeaderElements = styled.div`
 const TableBodyWrapper = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   background: #fff;
   height: 100%;
 

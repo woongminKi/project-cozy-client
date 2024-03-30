@@ -33,6 +33,7 @@ export default function Asset() {
   if (!ownedCoinList) {
     ownedCoinList = [];
   }
+  console.log('ownedCoinList', ownedCoinList);
   const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
 
   const [searchCoin, setSearchCoin] = useState('');
@@ -365,10 +366,9 @@ export default function Asset() {
   }, [tickerCoinList]);
 
   useEffect(() => {
-    if (ownedCoinList) {
+    if (ownedCoinList.length > 0) {
       const parsedCoinList = JSON.parse(ownedCoinList);
       const { coins } = parsedCoinList.asset;
-
       setNewCoinList(coins);
     }
   }, [ownedCoinList]);
@@ -593,6 +593,10 @@ export default function Asset() {
     navigate(`/trade/${clickedCoin}`);
   };
 
+  const goToMain = () => {
+    navigate('/');
+  };
+
   return (
     // <AssetWrapper>
     //   {
@@ -807,74 +811,81 @@ export default function Asset() {
     //   )}
     // </AssetWrapper>
     <AssetWrapper>
-      {filteredCoinList.map((coinElements) => {
-        return (
-          <ContentsWrapper key={coinElements.currency_name}>
-            <ContentsHeader>
-              <div>
-                {coinElements.currency_name} ({coinElements.currency_kr_name})
-              </div>
-              <div>
-                <EvaluationProfit>
-                  <ContentsHeaderTitle>평가 손익</ContentsHeaderTitle>{' '}
-                  <div>
-                    {coinElements.evaluate_profit ? (
-                      coinElements.evaluate_profit > 0 ? (
-                        <Red>
-                          {coinElements.evaluate_profit.toLocaleString()}원
-                        </Red>
+      {ownedCoinList.length > 0 ? (
+        filteredCoinList.map((coinElements) => {
+          return (
+            <ContentsWrapper key={coinElements.currency_name}>
+              <ContentsHeader>
+                <div>
+                  {coinElements.currency_name} ({coinElements.currency_kr_name})
+                </div>
+                <div>
+                  <EvaluationProfit>
+                    <ContentsHeaderTitle>평가 손익</ContentsHeaderTitle>{' '}
+                    <div>
+                      {coinElements.evaluate_profit ? (
+                        coinElements.evaluate_profit > 0 ? (
+                          <Red>
+                            {coinElements.evaluate_profit.toLocaleString()}원
+                          </Red>
+                        ) : (
+                          <Blue>
+                            {coinElements.evaluate_profit.toLocaleString()}원
+                          </Blue>
+                        )
                       ) : (
-                        <Blue>
-                          {coinElements.evaluate_profit.toLocaleString()}원
-                        </Blue>
+                        `${(coinElements.evaluate_profit = 0)}원`
+                      )}
+                    </div>
+                  </EvaluationProfit>
+                  <ProfitRate>
+                    <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
+                    {coinElements.evaluate_profit !== 0 ? (
+                      coinElements.evaluate_profit > 0 ? (
+                        <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
+                      ) : (
+                        <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
                       )
                     ) : (
-                      `${(coinElements.evaluate_profit = 0)}원`
+                      `${(coinElements.yield_rate = 0)}%`
                     )}
-                  </div>
-                </EvaluationProfit>
-                <ProfitRate>
-                  <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
-                  {coinElements.evaluate_profit !== 0 ? (
-                    coinElements.evaluate_profit > 0 ? (
-                      <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
-                    ) : (
-                      <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
-                    )
-                  ) : (
-                    `${(coinElements.yield_rate = 0)}%`
-                  )}
-                </ProfitRate>
-              </div>
-            </ContentsHeader>
+                  </ProfitRate>
+                </div>
+              </ContentsHeader>
 
-            <ContentsBody>
-              <ContentsBody1>
-                <ContentsBodyElements>
-                  <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
-                  {`${coinElements.quantity}개`}
-                </ContentsBodyElements>
-                <ContentsBodyElements>
-                  <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}
-                  {coinElements.averagePrice.toLocaleString()}원
-                </ContentsBodyElements>
-              </ContentsBody1>
-              <ContentsBody2>
-                <ContentsBodyElements>
-                  <div style={{ marginRight: '8px' }}>평가 금액</div>{' '}
-                  {coinElements.evaluate_price !== 0
-                    ? `${coinElements.evaluate_price.toLocaleString()}원`
-                    : `${(coinElements.evaluate_price = 0)}원`}
-                </ContentsBodyElements>
-                <ContentsBodyElements>
-                  <div style={{ marginRight: '8px' }}>매수 금액</div>{' '}
-                  {coinElements.bought_price.toLocaleString()}원
-                </ContentsBodyElements>
-              </ContentsBody2>
-            </ContentsBody>
-          </ContentsWrapper>
-        );
-      })}
+              <ContentsBody>
+                <ContentsBody1>
+                  <ContentsBodyElements>
+                    <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
+                    {`${coinElements.quantity}개`}
+                  </ContentsBodyElements>
+                  <ContentsBodyElements>
+                    <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}
+                    {coinElements.averagePrice.toLocaleString()}원
+                  </ContentsBodyElements>
+                </ContentsBody1>
+                <ContentsBody2>
+                  <ContentsBodyElements>
+                    <div style={{ marginRight: '8px' }}>평가 금액</div>{' '}
+                    {coinElements.evaluate_price !== 0
+                      ? `${coinElements.evaluate_price.toLocaleString()}원`
+                      : `${(coinElements.evaluate_price = 0)}원`}
+                  </ContentsBodyElements>
+                  <ContentsBodyElements>
+                    <div style={{ marginRight: '8px' }}>매수 금액</div>{' '}
+                    {coinElements.bought_price.toLocaleString()}원
+                  </ContentsBodyElements>
+                </ContentsBody2>
+              </ContentsBody>
+            </ContentsWrapper>
+          );
+        })
+      ) : (
+        <EmptyContentsWrapper>
+          <div>보유한 코인이 없습니다.</div>
+          <MoveBtn onClick={goToMain}>메인 페이지로 이동</MoveBtn>
+        </EmptyContentsWrapper>
+      )}
     </AssetWrapper>
   );
 }
@@ -1058,21 +1069,19 @@ const SortButton = styled(Button)`
   }
 `;
 
-const Message = styled.h4`
+const EmptyContentsWrapper = styled.div`
+  // display: flex;
+  // align-items: center;
+  // justify-content: center;
   text-align: center;
 `;
 
-const Line = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: ${LIGHT_GREY};
-`;
-
-const CoinLink = styled.div`
+const MoveBtn = styled.button`
+  width: 300px;
+  height: 48px;
+  margin-top: 24px;
+  border: none;
+  border-radius: 24px;
+  background: #ebebeb;
   cursor: pointer;
-`;
-
-const SearchDiv = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;
