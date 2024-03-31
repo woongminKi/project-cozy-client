@@ -464,11 +464,11 @@ export default function Main() {
     if (coinData) {
       // console.log('coinData?', coinData);
       if (coin.currency_name === coinData.symbol?.split('_')[0]) {
-        coin.closing_price = coinData.closePrice;
-        coin.change_rate_24H = coinData.chgRate;
-        coin.trade_value_24H = coinData.value;
-        coin.change_price = coinData.closePrice - coinData.prevClosePrice;
-        coin.change_total_trade_amount = coinData.value;
+        coin.closing_price = coinData?.closePrice;
+        coin.change_rate_24H = coinData?.chgRate;
+        coin.trade_value_24H = coinData?.value;
+        coin.change_price = coinData?.closePrice - coinData?.prevClosePrice;
+        coin.change_total_trade_amount = coinData?.value;
       }
 
       if (coinObj[coin.currency_name]) {
