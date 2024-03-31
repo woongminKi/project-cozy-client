@@ -369,6 +369,7 @@ export default function Asset() {
     if (ownedCoinList.length > 0) {
       const parsedCoinList = JSON.parse(ownedCoinList);
       const { coins } = parsedCoinList.asset;
+      console.log('coins??', coins);
       setNewCoinList(coins);
     }
   }, [ownedCoinList]);
@@ -814,7 +815,8 @@ export default function Asset() {
       {ownedCoinList.length > 0 ? (
         filteredCoinList.map((coinElements) => {
           return (
-            <ContentsWrapper key={coinElements.currency_name}>
+            // <ContentsWrapper key={coinElements.currency_name}>
+            <ContentsWrapper>
               <ContentsHeader>
                 <div>
                   {coinElements.currency_name} ({coinElements.currency_kr_name})

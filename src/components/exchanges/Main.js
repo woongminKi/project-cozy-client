@@ -463,7 +463,7 @@ export default function Main() {
   coinList.forEach((coin) => {
     if (coinData) {
       // console.log('coinData?', coinData);
-      if (coin.currency_name === coinData.symbol.split('_')[0]) {
+      if (coin.currency_name === coinData.symbol?.split('_')[0]) {
         coin.closing_price = coinData.closePrice;
         coin.change_rate_24H = coinData.chgRate;
         coin.trade_value_24H = coinData.value;
