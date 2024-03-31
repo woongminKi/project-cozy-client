@@ -346,12 +346,14 @@ export default function Main() {
     const parsedTickerCoin = JSON.parse(JSON.stringify(tickerCoinList));
     if (parsedTickerCoin) {
       const coinName = Object.keys(parsedTickerCoin.data.data);
-      const coinInfo = Object.values(parsedTickerCoin.data.data);
+      let coinInfo = Object.values(parsedTickerCoin.data.data);
+      // console.log('coinInfo::', coinInfo);
       for (let i = 0; i < coinInfo.length - 2; i++) {
         if (coinInfo[i].currency_name === undefined) {
           coinInfo[i]['currency_name'] = coinName[i];
         }
       }
+      coinInfo = coinInfo.slice(0, coinInfo.length - 1);
       setCoinList(coinInfo);
     }
   }, [coinData]);
@@ -461,21 +463,21 @@ export default function Main() {
   };
 
   coinList.forEach((coin) => {
-    console.log('무슨 데이터?', coin);
-    // if (coinData) {
-    //   // console.log('coinData?', coinData);
-    //   if (coin.currency_name === coinData.symbol?.split('_')[0]) {
-    //     coin.closing_price = coinData?.closePrice;
-    //     coin.change_rate_24H = coinData?.chgRate;
-    //     coin.trade_value_24H = coinData?.value;
-    //     coin.change_price = coinData?.closePrice - coinData?.prevClosePrice;
-    //     coin.change_total_trade_amount = coinData?.value;
-    //   }
+    // console.log('무슨 데이터?', coin, typeof coin);
+    if (coinData) {
+      // console.log('coinData?', coinData);
+      if (coin.currency_name === coinData.symbol?.split('_')[0]) {
+        coin.closing_price = coinData?.closePrice;
+        coin.change_rate_24H = coinData?.chgRate;
+        coin.trade_value_24H = coinData?.value;
+        coin.change_price = coinData?.closePrice - coinData?.prevClosePrice;
+        coin.change_total_trade_amount = coinData?.value;
+      }
 
-    //   if (coinObj[coin.currency_name]) {
-    //     coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
-    //   }
-    // }
+      if (coinObj[coin.currency_name]) {
+        coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
+      }
+    }
   });
 
   let filteredCoinList = '';
