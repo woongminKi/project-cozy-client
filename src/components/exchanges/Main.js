@@ -347,7 +347,7 @@ export default function Main() {
     if (parsedTickerCoin) {
       const coinName = Object.keys(parsedTickerCoin.data.data);
       const coinInfo = Object.values(parsedTickerCoin.data.data);
-      for (let i = 0; i < coinInfo.length - 1; i++) {
+      for (let i = 0; i < coinInfo.length - 2; i++) {
         if (coinInfo[i].currency_name === undefined) {
           coinInfo[i]['currency_name'] = coinName[i];
         }
@@ -366,7 +366,7 @@ export default function Main() {
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
-      console.log('실시간 코인?', socketCoinData);
+      // console.log('실시간 코인?', socketCoinData);
       dispatch(requestSocketData(socketCoinData));
 
       ws.onerror = (error) => {
@@ -460,22 +460,22 @@ export default function Main() {
         );
   };
 
-  // coinList.forEach((coin) => {
-  //   if (coinData) {
-  //     // console.log('coinData?', coinData);
-  //     if (coin.currency_name === coinData.symbol?.split('_')[0]) {
-  //       coin.closing_price = coinData?.closePrice;
-  //       coin.change_rate_24H = coinData?.chgRate;
-  //       coin.trade_value_24H = coinData?.value;
-  //       coin.change_price = coinData?.closePrice - coinData?.prevClosePrice;
-  //       coin.change_total_trade_amount = coinData?.value;
-  //     }
+  coinList.forEach((coin) => {
+    if (coinData) {
+      // console.log('coinData?', coinData);
+      if (coin.currency_name === coinData.symbol?.split('_')[0]) {
+        coin.closing_price = coinData?.closePrice;
+        coin.change_rate_24H = coinData?.chgRate;
+        coin.trade_value_24H = coinData?.value;
+        coin.change_price = coinData?.closePrice - coinData?.prevClosePrice;
+        coin.change_total_trade_amount = coinData?.value;
+      }
 
-  //     if (coinObj[coin.currency_name]) {
-  //       coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
-  //     }
-  //   }
-  // });
+      if (coinObj[coin.currency_name]) {
+        coin.currency_kr_name = `${coinObj[coin.currency_name]}`;
+      }
+    }
+  });
 
   let filteredCoinList = '';
   if (searchCoin === '') {
