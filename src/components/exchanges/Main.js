@@ -348,7 +348,7 @@ export default function Main() {
       const coinName = Object.keys(parsedTickerCoin.data.data);
       let coinInfo = Object.values(parsedTickerCoin.data.data);
       // console.log('coinInfo::', coinInfo);
-      for (let i = 0; i < coinInfo.length - 2; i++) {
+      for (let i = 0; i < coinInfo.length - 1; i++) {
         if (coinInfo[i].currency_name === undefined) {
           coinInfo[i]['currency_name'] = coinName[i];
         }
