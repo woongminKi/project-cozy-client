@@ -23,13 +23,14 @@ export default function KakaoRedirectHandler() {
       redirect_uri: redirectURI,
       code,
     });
+    console.log('payload??', payload);
 
     try {
       const res = await axios.post(
         'https://kauth.kakao.com/oauth/token',
         payload
       );
-      // console.log('로그인 res??', res);
+      console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
       if (!res.data.access_token) {
