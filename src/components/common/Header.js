@@ -8,6 +8,7 @@ import {
   BREAK_POINT_MOBILE,
   FONT_COLOR,
 } from './style';
+import { logoutRequest } from '../../features/auth/authSlice';
 import styled from 'styled-components';
 import hamburgerIcon from '../../images/icon-hamburger.svg';
 
@@ -29,8 +30,8 @@ export default function Header() {
   };
 
   function logout() {
-    sessionStorage.removeItem('access_token');
-    navigate('/main');
+    dispatch(logoutRequest({ uid: sessionStorage.getItem('uid') }));
+    navigate('/');
   }
 
   return (

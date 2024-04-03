@@ -6,7 +6,7 @@ export default function Home() {
   const navigate = useNavigate();
 
   function goTradeCenter() {
-    navigate('/main');
+    navigate('/');
   }
   function goLogin() {
     navigate('/login');

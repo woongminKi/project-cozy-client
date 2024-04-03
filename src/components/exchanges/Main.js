@@ -302,6 +302,7 @@ export default function Main() {
   const navigate = useNavigate();
   const [coinList, setCoinList] = useState([]);
   const [searchCoin, setSearchCoin] = useState('');
+  const [coinData, setCoinData] = useState({});
   const [isAscendSort, setIsAscendSort] = useState({
     isName: true,
     isCurrentPrice: true,
@@ -310,7 +311,8 @@ export default function Main() {
   });
   const { isName, isCurrentPrice, isRateOfChange, isTransactionAmount } =
     isAscendSort;
-  const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
+  // const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
+  // const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
   const isUsed = localStorage.getItem('default_asset');
   const [isOpenModal, setIsOpenModal] = useState({
@@ -359,17 +361,15 @@ export default function Main() {
   }, [coinData]);
 
   useEffect(() => {
-    // dispatch(loginRequest()); // /health로 체크하는 부분
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
     console.log('wsss', ws);
-    // const ws = new WebSocket('ws://localhost:8000/ws');
-    // console.log('wsss', ws);
 
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
-      console.log('실시간 코인?', socketCoinData);
-      dispatch(requestSocketData(socketCoinData));
+      // console.log('실시간 코인?', socketCoinData);
+      setCoinData(socketCoinData);
+      // dispatch(requestSocketData(socketCoinData)); // maximum request 문제있음
 
       ws.onerror = (error) => {
         console.error(error);

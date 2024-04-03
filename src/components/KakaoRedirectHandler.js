@@ -23,7 +23,6 @@ export default function KakaoRedirectHandler() {
       redirect_uri: redirectURI,
       code,
     });
-    console.log('payload??', payload);
 
     try {
       const res = await axios.post(
@@ -61,7 +60,8 @@ export default function KakaoRedirectHandler() {
           })
         );
         sessionStorage.setItem('access_token', res.data.access_token);
-        navigate('/main');
+        sessionStorage.setItem('uid', data.id);
+        navigate('/');
       }
     } catch (err) {
       console.log('Kakao Redirect Handler Error:', err);

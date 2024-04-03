@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { all, fork, put, takeLatest, takeEvery } from 'redux-saga/effects';
-import { loginRequest, loginSuccess, loginFail } from './authSlice';
+import { all, fork, put, takeLatest } from 'redux-saga/effects';
+import { loginRequest, logoutRequest, loginFail } from './authSlice';
 
 function* userLogin({ payload }) {
   const {
@@ -28,25 +28,35 @@ function* userLogin({ payload }) {
         user_image,
       },
     });
-    console.log('res??', response);
+    console.log('userLogin res??', response);
+    localStorage.setItem('token', response.data.token);
   } catch (err) {
     yield put(loginFail(err));
   }
 }
 
-// function* userLogin({ payload }) {
-//   try {
-//     const response = yield axios.get(`http://localhost:8000/health`, {});
-//     console.log('health res??', response);
-//   } catch (err) {
-//     yield put(loginFail(err));
-//   }
-// }
+function* userLogout({ payload }) {
+  console.log('logout payload', payload);
+  try {
+    const response = yield axios.post(`http://localhost:8000/user/logout`, {
+      header: {
+        uid: payload.uid,
+      },
+    });
+    console.log('logout res??', response);
+  } catch (err) {
+    yield put(loginFail(err));
+  }
+}
 
 function* watchLogin() {
   yield takeLatest(loginRequest, userLogin);
 }
 
+function* watchLogout() {
+  yield takeLatest(logoutRequest, userLogout);
+}
+
 export default function* authSaga() {
-  yield all([fork(watchLogin)]);
+  yield all([fork(watchLogin), fork(watchLogout)]);
 }
