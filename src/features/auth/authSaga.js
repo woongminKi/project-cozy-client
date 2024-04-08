@@ -1,8 +1,16 @@
 import axios from 'axios';
 import { all, fork, put, takeLatest } from 'redux-saga/effects';
-import { loginRequest, logoutRequest, loginFail } from './authSlice';
+import {
+  loginRequest,
+  logoutRequest,
+  loginFail,
+  loginSuccess,
+} from './authSlice';
+import { loginUserData } from '../user/userSlice';
+import { setCookie } from '../../utils/cookies';
 
 function* userLogin({ payload }) {
+  console.log('payloda?', payload);
   const {
     uid,
     user_name,
@@ -11,25 +19,56 @@ function* userLogin({ payload }) {
     refreshToken,
     accessTokenExpiresIn,
     refreshTokenExpiresIn,
+    token,
   } = payload;
 
+  console.log('토큰 봐라잉?', token);
   try {
-    const response = yield axios.post(`http://localhost:8000/user/login`, {
-      // server url
-      header: {
-        accessToken,
-        refreshToken,
-        accessTokenExpiresIn,
-        refreshTokenExpiresIn,
-      },
-      data: {
-        uid,
-        user_name,
-        user_image,
-      },
-    });
-    console.log('userLogin res??', response);
-    localStorage.setItem('token', response.data.token);
+    if (token) {
+      const response = yield axios.post(`http://localhost:8000/user/login`, {
+        header: {
+          token,
+        },
+      });
+      console.log('userLogin token res??', response.data.userData);
+      loginUserData({
+        uid: response.data.userData.uid,
+        user_name: response.data.userData.displayName,
+        user_image: response.data.userData.imgUrl,
+      });
+    } else {
+      const response = yield axios.post(`http://localhost:8000/user/login`, {
+        // server url
+        header: {
+          accessToken,
+          refreshToken,
+          accessTokenExpiresIn,
+          refreshTokenExpiresIn,
+        },
+        data: {
+          uid,
+          user_name,
+          user_image,
+        },
+      });
+      console.log('userLogin res??', response);
+      setCookie('accessToken', response.data.token, {
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+        maxAge: 7200,
+      });
+      setCookie('refreshToken', response.data.refreshToken, {
+        path: '/',
+        secure: true,
+        sameSite: 'none',
+        maxAge: 604800,
+      });
+      if (response.data.token) {
+        yield loginSuccess();
+      }
+      // sessionStorage.setItem('token', response.data.token);
+    }
   } catch (err) {
     yield put(loginFail(err));
   }
@@ -40,10 +79,13 @@ function* userLogout({ payload }) {
   try {
     const response = yield axios.post(`http://localhost:8000/user/logout`, {
       header: {
-        uid: payload.uid,
+        token: payload.accessToken,
       },
     });
     console.log('logout res??', response);
+    if (response.data.userData.login_yn === 'N') {
+      yield logoutRequest();
+    }
   } catch (err) {
     yield put(loginFail(err));
   }

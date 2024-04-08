@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
   MAIN_COLOR_1,
@@ -9,13 +9,16 @@ import {
   FONT_COLOR,
 } from './style';
 import { logoutRequest } from '../../features/auth/authSlice';
+import { getCookie, removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
 import hamburgerIcon from '../../images/icon-hamburger.svg';
 
 export default function Header() {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+  console.log('??', isLoggedIn);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const accessToken = sessionStorage.getItem('access_token');
+  const accessToken = getCookie('accessToken');
   const defaultAsset = localStorage.getItem('default_asset');
   let isMobile = false;
   if (window.innerWidth < 992) {
@@ -30,7 +33,9 @@ export default function Header() {
   };
 
   function logout() {
-    dispatch(logoutRequest({ uid: sessionStorage.getItem('uid') }));
+    removeCookie('accessToken');
+    removeCookie('refreshToken');
+    dispatch(logoutRequest({ accessToken }));
     navigate('/');
   }
 
@@ -38,7 +43,7 @@ export default function Header() {
     <>
       <StyledHeader>
         {isMobile ? '' : <CozyNavLink to='/'>COZY</CozyNavLink>}
-        {accessToken ? (
+        {!isLoggedIn ? (
           <>
             <StyledNavLink to='/main'>거래소</StyledNavLink>
             <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
@@ -54,18 +59,6 @@ export default function Header() {
             <StyledNavLink to='/login'>로그인</StyledNavLink>
           </>
         )}
-
-        {/* {isMobile ? (
-          <StyledNavLink>
-            <img
-              src={hamburgerIcon}
-              style={hamburgerStyle}
-              alt='hamburger-icon'
-            />
-          </StyledNavLink>
-        ) : (
-          ''
-        )} */}
       </StyledHeader>
     </>
   );

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest, loginSuccess } from '../features/auth/authSlice';
 import axios from 'axios';
 import qs from 'qs';
+import { getCookie } from '../utils/cookies';
 import { loginUserData } from '../features/user/userSlice';
 
 export default function KakaoRedirectHandler() {
@@ -32,35 +33,40 @@ export default function KakaoRedirectHandler() {
       console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
-      if (!res.data.access_token) {
-        dispatch(loginRequest({ res }));
-        dispatch(loginSuccess());
-      }
+      // if (!res.data.access_token) {
+      //   dispatch(loginRequest({ res }));
+      //   dispatch(loginSuccess());
+      // }
       if (res.status === 200) {
+        const token = localStorage.getItem('token');
+        dispatch(loginSuccess());
         const data = await window.Kakao.API.request({
           url: '/v2/user/me',
         });
         console.log('로그인 후 유저 데이터??', data);
-        dispatch(
-          loginRequest({
-            uid: data.id,
-            user_name: data.properties.nickname,
-            user_image: data.properties.profile_image,
-            accessToken: res.data.access_token,
-            refreshToken: res.data.refresh_token,
-            accessTokenExpiresIn: res.data.expires_in,
-            refreshTokenExpiresIn: res.data.refresh_token_expires_in,
-          })
-        );
-        dispatch(
-          loginUserData({
-            uid: data.id,
-            user_name: data.properties.nickname,
-            user_image: data.properties.profile_image,
-          })
-        );
-        sessionStorage.setItem('access_token', res.data.access_token);
-        sessionStorage.setItem('uid', data.id);
+        if (token) {
+          dispatch(loginRequest({ token }));
+        } else {
+          dispatch(
+            loginRequest({
+              uid: data.id,
+              user_name: data.properties.nickname,
+              user_image: data.properties.profile_image,
+              accessToken: res.data.access_token,
+              refreshToken: res.data.refresh_token,
+              accessTokenExpiresIn: res.data.expires_in,
+              refreshTokenExpiresIn: res.data.refresh_token_expires_in,
+            })
+          );
+        }
+        // dispatch(
+        //   loginUserData({
+        //     uid: data.id,
+        //     user_name: data.properties.nickname,
+        //     user_image: data.properties.profile_image,
+        //   })
+        // );
+        // sessionStorage.setItem('token', res.data.access_token);
         navigate('/');
       }
     } catch (err) {

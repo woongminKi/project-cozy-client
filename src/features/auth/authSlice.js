@@ -43,8 +43,7 @@ export const authSlice = createSlice({
     logoutRequest: (state, action) => {
       state.isLoggedIn = true;
       state.isSignUp = false;
-      sessionStorage.removeItem('access_token');
-      sessionStorage.removeItem('uid');
+      localStorage.removeItem('token');
       console.log('logout Request action payload??', action.payload);
     },
     logoutSuccess: (state) => {

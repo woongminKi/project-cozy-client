@@ -7,7 +7,7 @@ export default function Logout() {
   const dispatch = useDispatch();
 
   try {
-    sessionStorage.removeItem('access_token');
+    // sessionStorage.removeItem('token');
     navigate('/main');
   } catch (err) {
     console.log('error in logout');
