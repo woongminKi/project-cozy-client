@@ -2,16 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import {
-  MAIN_COLOR_1,
-  MAIN_COLOR_2,
-  MAIN_COLOR_3,
-  WHITE,
-  BLACK,
-  RED,
-  BLUE,
-  BREAK_POINT_MOBILE,
-} from '../common/style';
+import { RED, BLUE, BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Asset() {
   const navigate = useNavigate();
@@ -529,58 +520,12 @@ const ContentsBodyElements = styled.div`
   justify-content: space-around;
 `;
 
-const BodyWrapper = styled.div`
-  display: flex;
-  margin: 5px 5px;
-  justify-content: space-around;
-
-  .help-button {
-    cursor: pointer;
-    position: fixed;
-    bottom: 5%;
-    right: 2%;
-    padding: 35px 25px;
-    border: none;
-    border-radius: 50%;
-    font-size: 20px;
-    font-weight: 200;
-    color: ${WHITE};
-    background-color: ${MAIN_COLOR_1};
-    opacity: 80%;
-    transition: 0.2s;
-  }
-
-  .help-button:hover {
-    padding: 40px 30px;
-    opacity: 100%;
-    transition: 0.2s;
-  }
-`;
-
 const Red = styled.div`
   color: ${RED};
 `;
 
 const Blue = styled.div`
   color: ${BLUE};
-`;
-
-const Button = styled.button`
-  height: 35px;
-  background-color: ${MAIN_COLOR_3};
-  color: ${WHITE};
-  border-color: ${MAIN_COLOR_3};
-  border-style: none;
-  border-radius: 0.2rem;
-  cursor: pointer;
-  margin: 0px 10px;
-
-  :hover {
-    background-color: ${MAIN_COLOR_2};
-    border-color: ${MAIN_COLOR_2};
-    color: ${WHITE};
-    transition: 0.2s;
-  }
 `;
 
 const EmptyContentsWrapper = styled.div`
