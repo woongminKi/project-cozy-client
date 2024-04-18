@@ -151,17 +151,6 @@ export default function Chart() {
     },
   };
 
-  const handleChangePeriod = (e) => {
-    if (e.target.value === '1일') setTime('1m');
-    if (e.target.value === '3일') setTime('3m');
-    if (e.target.value === '10일') setTime('5m');
-    if (e.target.value === '20일') setTime('10m');
-    if (e.target.value === '2달') setTime('30m');
-    if (e.target.value === '6달') setTime('1h');
-    if (e.target.value === '3년') setTime('6h');
-    if (e.target.value === '8년') setTime('24h');
-  };
-
   return (
     <>
       <ChartWrapper>

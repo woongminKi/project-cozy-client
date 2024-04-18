@@ -5,10 +5,6 @@ import styled from 'styled-components';
 import { WHITE, MAIN_COLOR_1, BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Trade() {
-  let isMobile = false;
-  if (window.innerWidth < 992) {
-    isMobile = true;
-  }
   return (
     <TradeWrapper>
       <Chart />

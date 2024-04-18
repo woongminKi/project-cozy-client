@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -557,33 +557,6 @@ const BodyWrapper = styled.div`
   }
 `;
 
-const TitleBodyWrapper = styled(BodyWrapper)`
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-  margin: 10px 5px 0px 5px;
-`;
-
-const TitleWrapper = styled.div`
-  // margin: 0px 40px;
-  color: ${BLACK};
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-`;
-
-const Wrapper = styled.div`
-  color: ${BLACK};
-  width: 100%;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-`;
-
 const Red = styled.div`
   color: ${RED};
 `;
@@ -592,28 +565,6 @@ const Blue = styled.div`
   color: ${BLUE};
 `;
 
-const Input = styled.input`
-  height: 30px;
-  margin: 0px 10px;
-`;
-
-const SearchButton = styled.button`
-  height: 35px;
-  background: ${WHITE};
-  color: ${MAIN_COLOR_1};
-  border-color: ${WHITE};
-  border-style: none;
-  border-radius: 0.2rem;
-  cursor: pointer;
-  margin: 0px 10px;
-
-  :hover {
-    background-color: ${MAIN_COLOR_3};
-    border-color: ${MAIN_COLOR_3};
-    color: ${WHITE};
-    transition: 0.2s;
-  }
-`;
 const Button = styled.button`
   height: 35px;
   background-color: ${MAIN_COLOR_3};
@@ -632,21 +583,7 @@ const Button = styled.button`
   }
 `;
 
-const SortButton = styled(Button)`
-  padding: 0px;
-  margin-right: 0px;
-  background-color: ${WHITE};
-
-  :hover {
-    background-color: ${WHITE};
-    border-color: ${WHITE};
-  }
-`;
-
 const EmptyContentsWrapper = styled.div`
-  // display: flex;
-  // align-items: center;
-  // justify-content: center;
   text-align: center;
 `;
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
@@ -8,7 +8,6 @@ import { orderRequest } from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const coinList = useSelector((state) => state.stock.coinList.data.data);
   const { currencyName } = useParams();
   const [isBuy, setIsBuy] = useState(true);
@@ -47,7 +46,7 @@ export default function Order() {
   }
 
   let cash = localStorage.getItem('default_asset');
-  const buyCoinList = localStorage.getItem('coin-list');
+  // const buyCoinList = localStorage.getItem('coin-list');
 
   useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
@@ -315,24 +314,6 @@ const ToggleTradeButton = styled.div`
   }
 `;
 const TradeButton = styled.button`
-  cursor: pointer;
-  margin-top: 30px;
-  height: 80px;
-  border-style: none;
-  border-radius: 0.2rem;
-  background-color: #f75467;
-  color: ${WHITE};
-  font-size: 20px;
-  font-weight: bold;
-  transition: 0.2s;
-
-  :hover {
-    height: 90px;
-    font-size: 25px;
-    transition: 0.2s;
-  }
-`;
-const LoginButton = styled.button`
   cursor: pointer;
   margin-top: 30px;
   height: 80px;

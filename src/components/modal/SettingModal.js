@@ -1,29 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import { WHITE, BLACK, MAIN_COLOR_1 } from '../common/style';
 
 export default function SettingModal({ onTrade, onClose, children }) {
-  console.log('??', onClose);
-  const [show, setShow] = useState(true);
   let defaultAsset = '100000000';
-  const ref = useRef(defaultAsset);
 
   const handleDefaultAsset = (e) => {
     defaultAsset = e.target.value;
     localStorage.setItem('default_asset', defaultAsset);
     // console.log('??', e.target.value);
-  };
-  const setAsset = () => {
-    setShow(false);
-    console.log('show?', show);
-    if (ref.current) {
-      // ref.current.setAttribute('value', defaultAsset)
-      localStorage.setItem('default_asset', defaultAsset);
-    }
-    if (!show) {
-      this.setAttribute('display', 'none');
-    }
   };
   return (
     <>

@@ -4,13 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { styled } from 'styled-components';
 import { requestCoinList } from '../../features/stock/stockSlice';
 import FloatingButton from '../common/FloatingButton';
-
-import {
-  ascendSortAboutName,
-  ascendSortAboutMoney,
-  descendSortAboutName,
-  descendSortAboutMoney,
-} from '../../utils/sort';
 import SettingModal from '../modal/SettingModal';
 import {
   WHITE,
@@ -313,14 +306,6 @@ export default function Main() {
   const [coinList, setCoinList] = useState([]);
   const [searchCoin, setSearchCoin] = useState('');
   const [coinData, setCoinData] = useState({});
-  const [isAscendSort, setIsAscendSort] = useState({
-    isName: true,
-    isCurrentPrice: true,
-    isRateOfChange: true,
-    isTransactionAmount: true,
-  });
-  const { isName, isCurrentPrice, isRateOfChange, isTransactionAmount } =
-    isAscendSort;
   // const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
   const isUsed = localStorage.getItem('default_asset');
