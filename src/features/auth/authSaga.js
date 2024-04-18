@@ -19,11 +19,14 @@ function* userLogin({ payload }) {
   // console.log('토큰 봐라잉?', token);
   try {
     if (token) {
-      const response = yield axios.post(`http://localhost:8000/user/login`, {
-        header: {
-          token,
-        },
-      });
+      const response = yield axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/user/login`,
+        {
+          header: {
+            token,
+          },
+        }
+      );
       // console.log('userLogin token res??', response.data.userData);
       loginUserData({
         uid: response.data.userData.uid,
@@ -31,20 +34,23 @@ function* userLogin({ payload }) {
         user_image: response.data.userData.imgUrl,
       });
     } else {
-      const response = yield axios.post(`http://localhost:8000/user/login`, {
-        // server url
-        header: {
-          accessToken,
-          refreshToken,
-          accessTokenExpiresIn,
-          refreshTokenExpiresIn,
-        },
-        data: {
-          uid,
-          user_name,
-          user_image,
-        },
-      });
+      const response = yield axios.post(
+        `${process.env.REACT_APP_SERVER_URL}/user/login`,
+        {
+          // server url
+          header: {
+            accessToken,
+            refreshToken,
+            accessTokenExpiresIn,
+            refreshTokenExpiresIn,
+          },
+          data: {
+            uid,
+            user_name,
+            user_image,
+          },
+        }
+      );
       console.log('userLogin res??', response);
       setCookie('accessToken', response.data.token, {
         path: '/',
@@ -69,11 +75,14 @@ function* userLogin({ payload }) {
 function* userLogout({ payload }) {
   console.log('logout payload', payload);
   try {
-    const response = yield axios.post(`http://localhost:8000/user/logout`, {
-      header: {
-        token: payload.accessToken,
-      },
-    });
+    const response = yield axios.post(
+      `${process.env.REACT_APP_SERVER_URL}/user/logout`,
+      {
+        header: {
+          token: payload.accessToken,
+        },
+      }
+    );
     console.log('logout res??', response);
     if (response.data.userData.login_yn === 'N') {
       yield logoutRequest();
