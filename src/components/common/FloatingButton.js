@@ -1,22 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
 
 export default function FloatingButton({ supportItem }) {
-  const navigate = useNavigate();
-  // function openPaymentPage() {
-  //   navigate('/payment', { state: { supportItem } });
-  // }
-  // return <ButtonWrapper onClick={openPaymentPage}>응원하기💪</ButtonWrapper>;
-
   const user = useSelector((state) => state.auth.user);
   // console.log('user??', user);
 
   async function handleCheckout() {
     try {
-      console.log('클리돼?');
       const res = await axios.post(
         `${process.env.REACT_APP_SERVER_URL}/stripe/create-checkout-session`,
         {

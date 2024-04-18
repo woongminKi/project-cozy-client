@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { loginRequest, loginSuccess } from '../features/auth/authSlice';
 import axios from 'axios';
 import qs from 'qs';
-import { getCookie } from '../utils/cookies';
-import { loginUserData } from '../features/user/userSlice';
 
 export default function KakaoRedirectHandler() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const loginStatus = useSelector((state) => state.auth.loginStatus);
 
   const restAPIKey = `${process.env.REACT_APP_API_ID}`;
   const redirectURI = `${process.env.REACT_APP_REDIRECT_URI}/oauth/kakao/callback`;
@@ -33,17 +30,15 @@ export default function KakaoRedirectHandler() {
       console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
-      // if (!res.data.access_token) {
-      //   dispatch(loginRequest({ res }));
-      //   dispatch(loginSuccess());
-      // }
+
       if (res.status === 200) {
         const token = localStorage.getItem('token');
         dispatch(loginSuccess());
         const data = await window.Kakao.API.request({
           url: '/v2/user/me',
         });
-        console.log('로그인 후 유저 데이터??', data);
+        // console.log('로그인 후 유저 데이터??', data);
+
         if (token) {
           dispatch(loginRequest({ token }));
         } else {

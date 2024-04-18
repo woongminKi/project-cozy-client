@@ -28,7 +28,7 @@ export default function Chart() {
     return () => {
       clearTimeout(setTimeoutID);
     };
-  }, []);
+  }, [currencyName, dispatch, time]);
 
   const ohlc = [];
   const volume = [];

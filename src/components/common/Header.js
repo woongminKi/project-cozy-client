@@ -1,17 +1,11 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {
-  MAIN_COLOR_1,
-  MAIN_COLOR_3,
-  WHITE,
-  BREAK_POINT_MOBILE,
-  FONT_COLOR,
-} from './style';
+import { MAIN_COLOR_3, WHITE, BREAK_POINT_MOBILE, FONT_COLOR } from './style';
 import { logoutRequest } from '../../features/auth/authSlice';
 import { getCookie, removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
-import hamburgerIcon from '../../images/icon-hamburger.svg';
+// import hamburgerIcon from '../../images/icon-hamburger.svg';
 
 export default function Header() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -26,12 +20,12 @@ export default function Header() {
     isMobile = true;
   }
 
-  const hamburgerStyle = {
-    width: '24px',
-    height: '24px',
-    display: 'flex',
-    alignItems: 'center',
-  };
+  // const hamburgerStyle = {
+  //   width: '24px',
+  //   height: '24px',
+  //   display: 'flex',
+  //   alignItems: 'center',
+  // };
 
   function logout() {
     removeCookie('accessToken');
@@ -110,27 +104,4 @@ const CozyNavLink = styled(StyledNavLink)`
   color: ${FONT_COLOR};
   font-size: 2.8rem;
   font-weight: 900;
-`;
-
-const Button = styled.button`
-  position: fixed;
-  margin: 0.1rem;
-  top: 1px;
-  right: 0;
-  border: none;
-  background: ${MAIN_COLOR_1};
-  color: ${WHITE};
-`;
-
-const LogoutButton = styled(Button)`
-  cursor: pointer;
-
-  :hover {
-    color: ${MAIN_COLOR_3};
-  }
-`;
-
-const NameButton = styled(Button)`
-  right: 60px;
-  cursor: cursor;
 `;

@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import Main from '../components/exchanges/Main';
 import Trade from '../components/exchanges/Trade';
 import Header from '../components/common/Header';

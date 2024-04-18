@@ -1,6 +1,4 @@
 import { applyMiddleware, combineReducers, createStore } from 'redux';
-import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit';
-// import createSagaMiddleware from 'redux-saga';
 import createSagaMiddleWare from 'redux-saga';
 import { all } from 'redux-saga/effects';
 import storage from 'redux-persist/lib/storage/session';

@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import CanvasJSReact from '@canvasjs/react-stockcharts';
+import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from 'styled-components';
-import useCoinData from '../../hook/useCoinData';
-import {
-  requestCoinList,
-  requestSocketData,
-} from '../../features/stock/stockSlice';
-import { loginRequest } from '../../features/auth/authSlice';
+import { requestCoinList } from '../../features/stock/stockSlice';
 import FloatingButton from '../common/FloatingButton';
 
 import {
@@ -20,7 +14,6 @@ import {
 import SettingModal from '../modal/SettingModal';
 import {
   WHITE,
-  MAIN_COLOR_1,
   MAIN_COLOR_3,
   BREAK_POINT_MOBILE,
   TABLE_HEADER_FONT_COLOR,
@@ -340,15 +333,6 @@ export default function Main() {
     isFailTrade: false,
     isClicked: false,
   });
-  const {
-    isTrade,
-    isRequest,
-    isComplete,
-    isNotAuth,
-    isFailInput,
-    isFailTrade,
-    isClicked,
-  } = isOpenModal;
   let isMobile = false;
   if (window.innerWidth < 992) {
     isMobile = true;
@@ -409,71 +393,6 @@ export default function Main() {
     } else {
       setSearchCoin(coinName);
     }
-  };
-
-  const handleClickRefreshFilter = () => {
-    document.getElementById('coin-search').value = '';
-    setSearchCoin('');
-  };
-
-  const sortingByCoinName = () => {
-    setIsAscendSort({
-      ...isAscendSort,
-      isName: !isName,
-    });
-
-    isName
-      ? coinList.sort((a, b) =>
-          descendSortAboutName(a.currency_name, b.currency_name)
-        )
-      : coinList.sort((a, b) =>
-          ascendSortAboutName(a.currency_name, b.currency_name)
-        );
-  };
-
-  const sortingByCurrentPrice = () => {
-    setIsAscendSort({
-      ...isAscendSort,
-      isCurrentPrice: !isCurrentPrice,
-    });
-
-    isCurrentPrice
-      ? coinList.sort((a, b) =>
-          descendSortAboutMoney(a.closing_price, b.closing_price)
-        )
-      : coinList.sort((a, b) =>
-          ascendSortAboutMoney(a.closing_price, b.closing_price)
-        );
-  };
-
-  const sortingByRateOfChange = () => {
-    setIsAscendSort({
-      ...isAscendSort,
-      isRateOfChange: !isRateOfChange,
-    });
-
-    isRateOfChange
-      ? coinList.sort((a, b) =>
-          descendSortAboutMoney(a.fluctate_rate_24H, b.fluctate_rate_24H)
-        )
-      : coinList.sort((a, b) =>
-          ascendSortAboutMoney(a.fluctate_rate_24H, b.fluctate_rate_24H)
-        );
-  };
-
-  const sortingByTransactionAmount = () => {
-    setIsAscendSort({
-      ...isAscendSort,
-      isTransactionAmount: !isTransactionAmount,
-    });
-
-    isTransactionAmount
-      ? coinList.sort((a, b) =>
-          descendSortAboutMoney(a.acc_trade_value_24H, b.acc_trade_value_24H)
-        )
-      : coinList.sort((a, b) =>
-          ascendSortAboutMoney(a.acc_trade_value_24H, b.acc_trade_value_24H)
-        );
   };
 
   coinList.forEach((coin) => {
@@ -542,9 +461,6 @@ export default function Main() {
           type='text'
         />
         <SearchButton onClick={handleClickSearch}>검색</SearchButton>
-        {/* <SearchButton onClick={handleClickRefreshFilter}>
-          전체목록 보기
-        </SearchButton> */}
       </SearchDiv>
       <TableWrapperDiv>
         <TableHeaderDiv>
@@ -554,11 +470,6 @@ export default function Main() {
           <TableHeaderElements>현재가</TableHeaderElements>
           <TableHeaderElements>변동률</TableHeaderElements>
           <TableHeaderElements>거래금액(24H)</TableHeaderElements>
-          {/* <TableHeaderElements>시가총액</TableHeaderElements> */}
-          {/* <TableHeaderElements style={headerSpace}>
-            <div>차트</div>
-            <div>거래</div>
-          </TableHeaderElements> */}
         </TableHeaderDiv>
 
         <div>
@@ -682,7 +593,6 @@ export default function Main() {
 }
 
 const ContentsWrapper = styled.div`
-  // padding: 0 100px;
   margin-top: 84px;
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {

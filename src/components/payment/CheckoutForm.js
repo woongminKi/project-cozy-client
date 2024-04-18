@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   PaymentElement,
-  Elements,
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
@@ -13,7 +12,6 @@ export default function CheckoutForm() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  // const backendUrl = process.env.REACT_APP_SERVER_URL;
 
   useEffect(() => {
     if (!stripe) {
@@ -67,7 +65,6 @@ export default function CheckoutForm() {
         receipt_email: email,
       },
     });
-    console.log('error??', error);
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
