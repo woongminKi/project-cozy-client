@@ -59,14 +59,6 @@ export default function KakaoRedirectHandler() {
             })
           );
         }
-        // dispatch(
-        //   loginUserData({
-        //     uid: data.id,
-        //     user_name: data.properties.nickname,
-        //     user_image: data.properties.profile_image,
-        //   })
-        // );
-        // sessionStorage.setItem('token', res.data.access_token);
         navigate('/');
       }
     } catch (err) {

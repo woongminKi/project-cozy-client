@@ -9,6 +9,7 @@ import {
   requestSocketData,
 } from '../../features/stock/stockSlice';
 import { loginRequest } from '../../features/auth/authSlice';
+import FloatingButton from '../common/FloatingButton';
 
 import {
   ascendSortAboutName,
@@ -28,12 +29,6 @@ import {
   BLACK,
 } from '../common/style';
 
-const types = [
-  { key: 'candle_solid', text: '캔들' },
-  { key: 'candle_stroke', text: '투명 캔들' },
-  { key: 'ohlc', text: 'Bar 형식의 OHLC' },
-  { key: 'area', text: 'Mountain' },
-];
 export default function Main() {
   const coinObj = {
     BTC: '비트코인',
@@ -298,6 +293,28 @@ export default function Main() {
     SWAP: '트러스트스왑',
     CELR: '셀러네트워크',
   };
+  const supportItem = {
+    id: 'price_1P4WvJHMTJMkpnI26NQv0IpX',
+    object: 'price',
+    active: true,
+    billing_scheme: 'per_unit',
+    created: 1712877653,
+    currency: 'krw',
+    custom_unit_amount: null,
+    livemode: false,
+    lookup_key: null,
+    metadata: {},
+    nickname: null,
+    product: 'prod_PuLc7XzQGafHWe',
+    recurring: null,
+    tax_behavior: 'unspecified',
+    tiers_mode: null,
+    transform_quantity: null,
+    type: 'one_time',
+    unit_amount: 1200,
+    unit_amount_decimal: '1200',
+  };
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [coinList, setCoinList] = useState([]);
@@ -311,7 +328,6 @@ export default function Main() {
   });
   const { isName, isCurrentPrice, isRateOfChange, isTransactionAmount } =
     isAscendSort;
-  // const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   // const coinData = useSelector((state) => state.stock.socketCoin); // 실시간 socket으로 넘어오는 코인 데이터
   const tickerCoinList = useSelector((state) => state.stock.coinList); // 첫 랜더 시 코인 전체 데이터
   const isUsed = localStorage.getItem('default_asset');
@@ -349,7 +365,6 @@ export default function Main() {
     if (parsedTickerCoin) {
       const coinName = Object.keys(parsedTickerCoin.data.data);
       let coinInfo = Object.values(parsedTickerCoin.data.data);
-      // console.log('coinInfo::', coinInfo);
       for (let i = 0; i < coinInfo.length - 1; i++) {
         if (coinInfo[i].currency_name === undefined) {
           coinInfo[i]['currency_name'] = coinName[i];
@@ -367,7 +382,6 @@ export default function Main() {
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
-      // console.log('실시간 코인?', socketCoinData);
       setCoinData(socketCoinData);
       // dispatch(requestSocketData(socketCoinData)); // maximum request 문제있음
 
@@ -463,9 +477,7 @@ export default function Main() {
   };
 
   coinList.forEach((coin) => {
-    // console.log('무슨 데이터?', coin, typeof coin);
     if (coinData) {
-      // console.log('coinData?', coinData);
       if (coin.currency_name === coinData.symbol?.split('_')[0]) {
         coin.closing_price = coinData?.closePrice;
         coin.change_rate_24H = coinData?.chgRate;
@@ -518,12 +530,6 @@ export default function Main() {
     const clickedCoin = classNameArray[classNameArray.length - 1];
     navigate(`/trade/${clickedCoin}`);
   };
-
-  // const headerSpace = {
-  //   display: 'flex',
-  //   alignItems: 'center',
-  //   justifyContent: 'space-evenly',
-  // };
 
   return (
     <ContentsWrapper>
@@ -670,6 +676,7 @@ export default function Main() {
           )}
         </div>
       </TableWrapperDiv>
+      <FloatingButton supportItem={supportItem} />
     </ContentsWrapper>
   );
 }
@@ -751,23 +758,6 @@ const RowWrapper = styled.div`
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     // margin: 8px 0;
   }
-`;
-
-const ButtonWrapper = styled.div`
-  width: 20%;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const Button = styled.button`
-  width: 16px;
-  height: 16px;
-  padding: 4px;
-  background: #fff;
-  border: none;
-  // cursor: pointer;
 `;
 
 const Message = styled.h4`

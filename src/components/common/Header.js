@@ -15,10 +15,11 @@ import hamburgerIcon from '../../images/icon-hamburger.svg';
 
 export default function Header() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  console.log('??', isLoggedIn);
+  console.log('isLoggedIn??', isLoggedIn);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = getCookie('accessToken');
+  console.log('accessToken??', accessToken);
   const defaultAsset = localStorage.getItem('default_asset');
   let isMobile = false;
   if (window.innerWidth < 992) {
@@ -43,7 +44,7 @@ export default function Header() {
     <>
       <StyledHeader>
         {isMobile ? '' : <CozyNavLink to='/'>COZY</CozyNavLink>}
-        {!isLoggedIn ? (
+        {isLoggedIn ? (
           <>
             <StyledNavLink to='/main'>거래소</StyledNavLink>
             <StyledNavLink to='/assets'>자산 현황</StyledNavLink>

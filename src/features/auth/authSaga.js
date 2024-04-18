@@ -1,16 +1,10 @@
 import axios from 'axios';
 import { all, fork, put, takeLatest } from 'redux-saga/effects';
-import {
-  loginRequest,
-  logoutRequest,
-  loginFail,
-  loginSuccess,
-} from './authSlice';
+import { loginRequest, logoutRequest, loginFail } from './authSlice';
 import { loginUserData } from '../user/userSlice';
 import { setCookie } from '../../utils/cookies';
 
 function* userLogin({ payload }) {
-  console.log('payloda?', payload);
   const {
     uid,
     user_name,
@@ -22,7 +16,7 @@ function* userLogin({ payload }) {
     token,
   } = payload;
 
-  console.log('토큰 봐라잉?', token);
+  // console.log('토큰 봐라잉?', token);
   try {
     if (token) {
       const response = yield axios.post(`http://localhost:8000/user/login`, {
@@ -30,7 +24,7 @@ function* userLogin({ payload }) {
           token,
         },
       });
-      console.log('userLogin token res??', response.data.userData);
+      // console.log('userLogin token res??', response.data.userData);
       loginUserData({
         uid: response.data.userData.uid,
         user_name: response.data.userData.displayName,
@@ -57,17 +51,15 @@ function* userLogin({ payload }) {
         secure: true,
         sameSite: 'none',
         maxAge: 7200,
+        httpOnly: true,
       });
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
         secure: true,
         sameSite: 'none',
         maxAge: 604800,
+        httpOnly: true,
       });
-      if (response.data.token) {
-        yield loginSuccess();
-      }
-      // sessionStorage.setItem('token', response.data.token);
     }
   } catch (err) {
     yield put(loginFail(err));

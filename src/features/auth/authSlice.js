@@ -18,32 +18,22 @@ export const authSlice = createSlice({
   reducers: {
     loginRequest: (state, action) => {
       state.loginStatus = false;
-      state.isLoggedIn = false;
-      console.log('loginSuccess action payload??', action.payload);
       state.user = action.payload;
+      console.log('loginSuccess action payload??', action.payload);
     },
     loginSuccess: (state, action) => {
       state.loginStatus = true;
       state.isLoggedIn = true;
-      // const { message } = action.payload;
-      // state.isSignUp = message === '유저 등록 성공' ? true : false;
+      console.log('isLoggedIn status?', state.isLoggedIn);
     },
     loginFail: (state, action) => {
-      console.log('login fail??', action.payload);
-      // const { message, status } = action.payload.response.data;
-
-      // state.error = {
-      //   message,
-      //   status,
-      // };
-
+      // console.log('login fail??', action.payload);
       state.isLoggedIn = false;
       state.error = 'login error';
     },
     logoutRequest: (state, action) => {
-      state.isLoggedIn = true;
+      state.isLoggedIn = false;
       state.isSignUp = false;
-      localStorage.removeItem('token');
       console.log('logout Request action payload??', action.payload);
     },
     logoutSuccess: (state) => {
