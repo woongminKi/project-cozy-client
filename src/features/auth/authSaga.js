@@ -78,9 +78,7 @@ function* userLogout({ payload }) {
     const response = yield axios.post(
       `${process.env.REACT_APP_SERVER_URL}/user/logout`,
       {
-        header: {
-          token: payload.accessToken,
-        },
+        data: payload.user.uid,
       }
     );
     console.log('logout res??', response);

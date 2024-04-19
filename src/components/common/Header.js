@@ -8,8 +8,8 @@ import styled from 'styled-components';
 // import hamburgerIcon from '../../images/icon-hamburger.svg';
 
 export default function Header() {
-  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
-  console.log('isLoggedIn??', isLoggedIn);
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
+  console.log('isLoggedIn??', isLoggedIn, user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const accessToken = getCookie('accessToken');
@@ -28,9 +28,9 @@ export default function Header() {
   // };
 
   function logout() {
+    dispatch(logoutRequest({ user }));
     removeCookie('accessToken');
     removeCookie('refreshToken');
-    dispatch(logoutRequest({ accessToken }));
     navigate('/');
   }
 
