@@ -18,6 +18,8 @@ function* userLogin({ payload }) {
 
   // console.log('토큰 봐라잉?', token);
   try {
+    const test = yield axios.get(`${process.env.REACT_APP_SERVER_URL}/user`);
+    console.log('뭐가 넘어오냐?', test);
     if (token) {
       const response = yield axios.post(
         `${process.env.REACT_APP_SERVER_URL}/user/login`,
