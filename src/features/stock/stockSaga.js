@@ -10,6 +10,8 @@ import {
 
 function* getCoinList({ payload }) {
   try {
+    const test = yield axios.get(`${process.env.REACT_APP_SERVER_URL}/`);
+    console.log('뭐가 넘어오냐?', test);
     const ticker = yield axios.get(
       `https://api.bithumb.com/public/ticker/ALL_KRW`
     );
