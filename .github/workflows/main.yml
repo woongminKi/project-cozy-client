@@ -16,5 +16,3 @@ jobs:
       - name: ✅ 체크아웃 source code.
         run: ls -al
         uses: actions/checkout@v3
-        run: ls -al
-        run: cat .github/workflows/checkout.yml
