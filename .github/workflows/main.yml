@@ -5,28 +5,29 @@ on:
     branches: [master]
 
 jobs:
-  deploy_phase_1:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.20.2]
 
     steps:
-      - name: Setting environment variables
-        run: |
-          touch ${{ env.ENV_PATH }}
-          echo REACT_APP_API_ID=${{ secrets.REACT_APP_API_ID }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_CANDLESTICK_API_URL=${{ secrets.REACT_APP_CANDLESTICK_API_URL }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_CLIENT_SECRET_ID=${{ secrets.REACT_APP_CLIENT_SECRET_ID }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_REDIRECT_URI=${{ secrets.REACT_APP_REDIRECT_URI }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_SERVER_URL=${{ secrets.REACT_APP_SERVER_URL }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_STRIPE_PUBLISHABLE_KEY=${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_STRIPE_SECRET_KEY=${{ secrets.REACT_APP_STRIPE_SECRET_KEY }} >> ${{ env.ENV_PATH }}
-          echo REACT_APP_WEBSOCKET_SERVER_URL=${{ secrets.REACT_APP_WEBSOCKET_SERVER_URL }} >> ${{ env.ENV_PATH }}
-          echo WDS_SOCKET_PORT=${{ secrets.WDS_SOCKET_PORT }} >> ${{ env.ENV_PATH }}
+      - name: ✅ Checkout branch
+        uses: actions/checkout@v3
 
-      - name: 🌎 Access to AWS
-        uses: aws-actions/configure-aws-credentials@v2
+      - name: 📀 Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
+          node-version: ${{ matrix.node-version }}
 
-      - uses: actions/checkout@v3
+      - name: ✨ Install npm
+        uses: npm/action-setup@v2
+        id: npm-install
+        with:
+          run_install: false
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🔨 Build Project
+        run: npm run build
