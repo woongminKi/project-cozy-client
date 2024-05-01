@@ -10,7 +10,8 @@ import { BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Chart() {
   const dispatch = useDispatch();
-  const [time, setTime] = useState('10m');
+  // const [time, setTime] = useState('10m');
+  const [time] = useState('10m');
   const { currencyName } = useParams();
   const chartData = useSelector((state) => state.candleStick.candleStick);
 

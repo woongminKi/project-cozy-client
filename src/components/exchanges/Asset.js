@@ -319,6 +319,7 @@ export default function Asset() {
     }
 
     setCoinList(coinInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tickerCoinList]);
 
   useEffect(() => {

@@ -342,6 +342,7 @@ export default function Main() {
       coinInfo = coinInfo.slice(0, coinInfo.length - 1);
       setCoinList(coinInfo);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coinData]);
 
   useEffect(() => {
