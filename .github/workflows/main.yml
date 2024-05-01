@@ -33,17 +33,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-    # steps:
-    #   - name: ✅ Checkout branch
-    #     uses: actions/checkout@v3
+      # steps:
+      #   - name: ✅ Checkout branch
+      #     uses: actions/checkout@v3
 
-    #   - name: 📀 Install Node.js ${{ matrix.node-version }}
-    #     uses: actions/setup-node@v3
-    #     with:
-    #       node-version: ${{ matrix.node-version }}
+      - name: 📀 Install Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-    #   - name: 📦 Install dependencies
-    #     run: npm install
+      - name: 📦 Install dependencies
+        run: npm install
 
-    #   - name: 🔨 Build Project
-    #     run: npm run build
+      - name: 🔨 Build Project
+        run: npm run build
