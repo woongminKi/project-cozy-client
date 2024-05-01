@@ -20,6 +20,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: ✨ Install npm
+        uses: npm/action-setup@v3
+        id: npm-install
+        with:
+          run_install: false
+
       - name: 📦 Install dependencies
         run: npm install
 
