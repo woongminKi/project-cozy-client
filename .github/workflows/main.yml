@@ -6,11 +6,21 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [16.20.2]
+
+    env:
+      REACT_APP_API_ID: ${{ secrets.REACT_APP_API_ID }}
+      REACT_APP_CANDLESTICK_API_URL: ${{ secrets.REACT_APP_CANDLESTICK_API_URL }}
+      REACT_APP_CLIENT_SECRET_ID: ${{ secrets.REACT_APP_CLIENT_SECRET_ID }}
+      REACT_APP_REDIRECT_URI: ${{ secrets.REACT_APP_REDIRECT_URI }}
+      REACT_APP_SERVER_URL: ${{ secrets.REACT_APP_SERVER_URL }}
+      REACT_APP_STRIPE_PUBLISHABLE_KEY: ${{ secrets.REACT_APP_STRIPE_PUBLISHABLE_KEY }}
+      REACT_APP_STRIPE_SECRET_KEY: ${{ secrets.REACT_APP_STRIPE_SECRET_KEY }}
+      REACT_APP_WEBSOCKET_SERVER_URL: ${{ secrets.REACT_APP_WEBSOCKET_SERVER_URL }}
+      WDS_SOCKET_PORT: ${{ secrets.WDS_SOCKET_PORT }}
 
     steps:
       - name: ✅ Checkout branch
@@ -20,12 +30,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: ✨ Install npm
-        uses: npm/action-setup@v3
-        id: npm-install
-        with:
-          run_install: false
 
       - name: 📦 Install dependencies
         run: npm install
