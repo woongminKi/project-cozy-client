@@ -43,9 +43,3 @@ jobs:
 
       - name: 🔨 Build Project
         run: npm run build
-
-      - name: ✅ Checkout branch
-        uses: actions/checkout@v3
-
-      - name: 🚀 SSH to Server and Run Commands
-        uses: appleboy/ssh-action@master
