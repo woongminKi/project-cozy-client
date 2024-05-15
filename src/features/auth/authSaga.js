@@ -16,7 +16,6 @@ function* userLogin({ payload }) {
     token,
   } = payload;
 
-  // console.log('토큰 봐라잉?', token);
   try {
     if (token) {
       const response = yield axios.post(
