@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 
 export default function FloatingButton({ supportItem }) {
   const user = useSelector((state) => state.auth.user);
-  // console.log('user??', user);
 
   async function handleCheckout() {
     try {
