@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_COLOR_3, WHITE, BREAK_POINT_MOBILE, FONT_COLOR } from './style';
 import { logoutRequest } from '../../features/auth/authSlice';
-import { getCookie, removeCookie } from '../../utils/cookies';
+import { removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
 // import hamburgerIcon from '../../images/icon-hamburger.svg';
 
