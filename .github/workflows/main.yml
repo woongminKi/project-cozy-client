@@ -62,7 +62,7 @@ jobs:
             cd /home/ubuntu
             pm2 stop 0
             pm2 stop 1
-            cd /home/ubuntu/project-client
+            cd /home/ubuntu/project-cozy-client
             sudo git pull
             npm i
             npm run build
