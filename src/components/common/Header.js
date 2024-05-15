@@ -9,11 +9,8 @@ import styled from 'styled-components';
 
 export default function Header() {
   const { isLoggedIn, user } = useSelector((state) => state.auth);
-  console.log('isLoggedIn??', isLoggedIn, user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const accessToken = getCookie('accessToken');
-  console.log('accessToken??', accessToken);
   const defaultAsset = localStorage.getItem('default_asset');
   let isMobile = false;
   if (window.innerWidth < 992) {
