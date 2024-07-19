@@ -170,9 +170,18 @@ export default function Chart() {
 const ChartWrapper = styled.div`
   width: 100%;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-right: 24px;
 
   .date-selector {
-    margin: 227px 24px 50px 0px;
+    // margin: 227px 24px 50px 0px;
+  }
+
+  .highcharts-container {
+    display: flex;
+    justify-content: center;
   }
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {

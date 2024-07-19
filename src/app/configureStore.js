@@ -34,44 +34,9 @@ const persistedReducer = persistReducer(
 
 function* rootSaga() {
   yield all([authSaga(), stockSaga(), candleStickSaga()]);
-  // yield all([authSaga(), stockSaga()]);
 }
-
-// const store = configureStore({
-//   reducer,
-//   middleware: (getDefaultMiddleware) =>
-//     getDefaultMiddleware({ serializableCheck: false }, [sagaMiddleware]),
-// });
 
 const store = createStore(persistedReducer, applyMiddleware(sagaMiddleware));
 
 sagaMiddleware.run(rootSaga);
 export default store;
-
-// const sagaMiddleware = createSagaMiddleWare();
-
-// const persistConfig = {
-//   key: 'root',
-//   storage,
-// };
-
-// const reducer = combineReducers({
-//   auth,
-//   candleStick,
-//   stock,
-// });
-
-// const persistedReducer = persistReducer(persistConfig, reducer);
-
-// function* rootSaga() {
-//   yield all([authSaga(), candleStickSaga(), stockSaga()]);
-// }
-
-// const store = configureStore({
-//   reducer: persistedReducer,
-//   middleware: [sagaMiddleware],
-// });
-
-// sagaMiddleware.run(rootSaga);
-
-// export default store;

@@ -1,6 +1,11 @@
 import axios from 'axios';
 import { all, fork, put, takeLatest } from 'redux-saga/effects';
-import { loginRequest, logoutRequest, loginFail } from './authSlice';
+import {
+  loginRequest,
+  loginSuccess,
+  logoutRequest,
+  loginFail,
+} from './authSlice';
 import { loginUserData } from '../user/userSlice';
 import { setCookie } from '../../utils/cookies';
 
@@ -51,6 +56,11 @@ function* userLogin({ payload }) {
         }
       );
       console.log('userLogin res??', response);
+
+      if (response.data.token) {
+        loginSuccess();
+      }
+
       setCookie('accessToken', response.data.token, {
         path: '/',
         secure: true,
@@ -81,7 +91,7 @@ function* userLogout({ payload }) {
       }
     );
     console.log('logout res??', response);
-    if (response.data.userData.login_yn === 'N') {
+    if (response.data.status === 200) {
       yield logoutRequest();
     }
   } catch (err) {

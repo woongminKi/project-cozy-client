@@ -1,28 +1,44 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_COLOR_3, WHITE, BREAK_POINT_MOBILE, FONT_COLOR } from './style';
 import { logoutRequest } from '../../features/auth/authSlice';
-import { removeCookie } from '../../utils/cookies';
+import { getCookie, removeCookie } from '../../utils/cookies';
 import styled from 'styled-components';
 // import hamburgerIcon from '../../images/icon-hamburger.svg';
 
 export default function Header() {
+  const [isToken, setIsToken] = useState(false);
   const { isLoggedIn, user } = useSelector((state) => state.auth);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const defaultAsset = localStorage.getItem('default_asset');
+
   let isMobile = false;
   if (window.innerWidth < 992) {
     isMobile = true;
   }
 
-  // const hamburgerStyle = {
-  //   width: '24px',
-  //   height: '24px',
-  //   display: 'flex',
-  //   alignItems: 'center',
-  // };
+  useEffect(() => {
+    const checkToken = () => {
+      getCookie('accessToken') ? setIsToken(true) : setIsToken(false);
+    };
+
+    checkToken();
+
+    const observer = new MutationObserver(() => {
+      checkToken();
+    });
+
+    observer.observe(document, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    });
+
+    return () => observer.disconnect();
+  }, [isLoggedIn]);
 
   function logout() {
     dispatch(logoutRequest({ user }));
@@ -35,13 +51,14 @@ export default function Header() {
     <>
       <StyledHeader>
         {isMobile ? '' : <CozyNavLink to='/'>COZY</CozyNavLink>}
-        {isLoggedIn ? (
+        {isToken ? (
           <>
             <StyledNavLink to='/main'>거래소</StyledNavLink>
             <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
             <StyledNavLink style={{ cursor: 'unset' }}>
               {Number(defaultAsset).toLocaleString()}원
             </StyledNavLink>
+
             <StyledNavLink onClick={logout}>로그아웃</StyledNavLink>
           </>
         ) : (

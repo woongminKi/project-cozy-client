@@ -17,17 +17,15 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     loginRequest: (state, action) => {
-      state.loginStatus = false;
       state.user = action.payload;
-      console.log('loginSuccess action payload??', action.payload);
+      // console.log('loginSuccess action payload??', action.payload);
     },
     loginSuccess: (state, action) => {
+      // console.log('isLoggedIn status?', state);
       state.loginStatus = true;
       state.isLoggedIn = true;
-      console.log('isLoggedIn status?', state.isLoggedIn);
     },
-    loginFail: (state, action) => {
-      // console.log('login fail??', action.payload);
+    loginFail: (state) => {
       state.isLoggedIn = false;
       state.error = 'login error';
     },
@@ -39,6 +37,7 @@ export const authSlice = createSlice({
     logoutSuccess: (state) => {
       state.isLoggedIn = false;
       state.isSignUp = false;
+      // console.log('logout success action payload??');
     },
     closeWelcomeModal: (state) => {
       state.isSignUp = false;
