@@ -64,6 +64,7 @@ function* userLogin({ payload }) {
       setCookie('accessToken', response.data.token, {
         path: '/',
         secure: true,
+        domain: 'https://coin-is-easy.xyz/',
         sameSite: 'none',
         maxAge: 7200,
         httpOnly: true,
@@ -71,6 +72,7 @@ function* userLogin({ payload }) {
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
         secure: true,
+        domain: 'https://coin-is-easy.xyz/',
         sameSite: 'none',
         maxAge: 604800,
         httpOnly: true,
