@@ -63,19 +63,19 @@ function* userLogin({ payload }) {
 
       setCookie('accessToken', response.data.token, {
         path: '/',
-        secure: true,
+        // secure: true,
         domain: 'coin-is-easy.xyz',
         sameSite: 'none',
         maxAge: 7200,
-        httpOnly: true,
+        // httpOnly: true,
       });
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
-        secure: true,
+        // secure: true,
         domain: 'coin-is-easy.xyz',
         sameSite: 'none',
         maxAge: 604800,
-        httpOnly: true,
+        // httpOnly: true,
       });
     }
   } catch (err) {
