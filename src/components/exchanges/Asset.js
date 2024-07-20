@@ -326,7 +326,7 @@ export default function Asset() {
     if (ownedCoinList.length > 0) {
       const parsedCoinList = JSON.parse(ownedCoinList);
       const { coins } = parsedCoinList.asset;
-      console.log('coins??', coins);
+      // console.log('coins??', coins);
       setNewCoinList(coins);
     }
   }, [ownedCoinList]);

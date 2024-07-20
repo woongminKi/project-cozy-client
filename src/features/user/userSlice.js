@@ -15,7 +15,7 @@ const userSlice = createSlice({
   },
   reducers: {
     loginUserData: (state, action) => {
-      console.log('userSlice에서 loginUserData', action.payload);
+      // console.log('userSlice에서 loginUserData', action.payload);
       // state.user = Object.assign({}, action.payload);
       state.user = {
         asset: {
@@ -39,7 +39,7 @@ const userSlice = createSlice({
     },
     orderRequest: (state, action) => {
       let currentMoney = localStorage.getItem('default_asset');
-      console.log('주문 성공?', action.payload);
+      // console.log('주문 성공?', action.payload);
       state.user.asset.cash =
         Number(currentMoney) - Number(action.payload.orderPrice);
       state.user.asset.coins.push(action.payload);

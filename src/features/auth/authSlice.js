@@ -32,7 +32,7 @@ export const authSlice = createSlice({
     logoutRequest: (state, action) => {
       state.isLoggedIn = false;
       state.isSignUp = false;
-      console.log('logout Request action payload??', action.payload);
+      // console.log('logout Request action payload??', action.payload);
     },
     logoutSuccess: (state) => {
       state.isLoggedIn = false;

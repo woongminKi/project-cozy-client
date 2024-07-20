@@ -28,7 +28,7 @@ export default function KakaoRedirectHandler() {
         'https://kauth.kakao.com/oauth/token',
         payload
       );
-      console.log('로그인 res??', res);
+      // console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
 

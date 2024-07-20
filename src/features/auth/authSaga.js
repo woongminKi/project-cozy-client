@@ -67,7 +67,7 @@ function* userLogin({ payload }) {
         domain: 'https://coin-is-easy.xyz/',
         sameSite: 'none',
         maxAge: 7200,
-        httpOnly: true,
+        // httpOnly: true,
       });
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
@@ -75,7 +75,7 @@ function* userLogin({ payload }) {
         domain: 'https://coin-is-easy.xyz/',
         sameSite: 'none',
         maxAge: 604800,
-        httpOnly: true,
+        // httpOnly: true,
       });
     }
   } catch (err) {
@@ -84,7 +84,7 @@ function* userLogin({ payload }) {
 }
 
 function* userLogout({ payload }) {
-  console.log('logout payload', payload);
+  // console.log('logout payload', payload);
   try {
     const response = yield axios.post(
       `${process.env.REACT_APP_SERVER_URL}/user/logout`,
@@ -92,7 +92,7 @@ function* userLogout({ payload }) {
         data: payload.user.uid,
       }
     );
-    console.log('logout res??', response);
+    // console.log('logout res??', response);
     if (response.data.status === 200) {
       yield logoutRequest();
     }
