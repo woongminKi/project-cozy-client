@@ -69,6 +69,7 @@ function* userLogin({ payload }) {
         maxAge: 7200,
         // httpOnly: true,
       });
+      console.log('access token set?');
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
         // secure: true,
@@ -77,6 +78,7 @@ function* userLogin({ payload }) {
         maxAge: 604800,
         // httpOnly: true,
       });
+      console.log('refresh token set?');
     }
   } catch (err) {
     yield put(loginFail(err));
