@@ -63,8 +63,8 @@ function* userLogin({ payload }) {
 
       setCookie('accessToken', response.data.token, {
         path: '/',
-        // secure: true,
-        domain: 'coin-is-easy.xyz',
+        secure: true,
+        // domain: 'coin-is-easy.xyz',
         sameSite: 'none',
         maxAge: 7200,
         // httpOnly: true,
@@ -72,8 +72,8 @@ function* userLogin({ payload }) {
       console.log('access token set?');
       setCookie('refreshToken', response.data.refreshToken, {
         path: '/',
-        // secure: true,
-        domain: 'coin-is-easy.xyz',
+        secure: true,
+        // domain: 'coin-is-easy.xyz',
         sameSite: 'none',
         maxAge: 604800,
         // httpOnly: true,
