@@ -12,6 +12,6 @@ code {
     monospace;
 }
 @font-face {
-  font-family: 'Poppins-Light';
-  src: url('./fonts/Poppins-Light.ttf') format('truetype');
+  font-family: 'PretendardVariable';
+  src: url('./fonts/PretendardVariable.ttf') format('truetype');
 }

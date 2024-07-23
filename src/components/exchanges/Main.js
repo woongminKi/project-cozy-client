@@ -484,7 +484,10 @@ export default function Main() {
                     </div>
                   </TableBodyElements>
                   <TableBodyElements>
-                    {Number(coin.closing_price).toLocaleString('ko-KR')}
+                    {isMobile
+                      ? Number(coin.closing_price).toLocaleString('ko-KR')
+                      : Number(coin.closing_price).toLocaleString('ko-KR') +
+                        '원'}
                   </TableBodyElements>
                   <TableBodyElements>
                     {isMobile ? (
@@ -593,13 +596,12 @@ const TableWrapperDiv = styled.div`
 const TableHeaderDiv = styled.div`
   display: flex;
   align-items: center;
-  // justify-content: center;
   justify-content: space-around;
   width: 100%;
   margin-top: 16px;
   background: ${WHITE};
-  border-top: 1px solid #dcdcdc;
-  border-bottom: 1px solid #dcdcdc;
+  // border-top: 1px solid #dcdcdc;
+  // border-bottom: 1px solid #dcdcdc;
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     height: 50px;
@@ -614,7 +616,7 @@ const TableHeaderElements = styled.div`
   display: flex;
   align-items: center;
   justify-content: right;
-  font-family: 'Poppins-Light';
+  font-family: 'PretendardVariable';
   color: ${TABLE_HEADER_FONT_COLOR};
 `;
 
@@ -635,7 +637,7 @@ const TableBodyElements = styled.div`
   width: 20%;
   height: 36px;
   padding: 6px 0;
-  font-family: 'Poppins-Light';
+  font-family: 'PretendardVariable';
   display: flex;
   align-items: center;
   justify-content: right;
@@ -670,7 +672,7 @@ const SearchDiv = styled.div`
 const Input = styled.input`
   width: 100%;
   height: 40px;
-  margin: 0px 10px;
+  margin: 0px 39px;
   border: 1px solid #dcdcdc;
   border-radius: 24px;
   padding-left: 20px;
@@ -684,7 +686,7 @@ const SearchButton = styled.button`
   width: 60px;
   height: 35px;
   position: absolute;
-  right: 15px;
+  right: 44px;
   border-style: none;
   border-radius: 24px;
   background: ${BUTTON_COLOR};
