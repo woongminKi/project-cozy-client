@@ -8,7 +8,7 @@ export default function Trade() {
   return (
     <TradeWrapper>
       <Chart />
-      <Order />
+      {/* <Order /> */}
     </TradeWrapper>
   );
 }

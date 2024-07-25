@@ -12,10 +12,9 @@ function* getCandleStickData({ payload }) {
   try {
     // console.log('res??', process.env.REACT_APP_CANDLESTICK_API_URL);
     const res = yield axios.get(
-      `https://api.bithumb.com/public/candlestick/${currencyName}_KRW/${time}`
+      `https://api.bithumb.com/v1/candles/days?market=KRW-${currencyName}&count=200` // 1일 캔들 데이터
     );
-
-    const candleStickData = res.data.data;
+    const candleStickData = res.data;
 
     if (res.status === 200) {
       yield put(candleStickSuccess(candleStickData));

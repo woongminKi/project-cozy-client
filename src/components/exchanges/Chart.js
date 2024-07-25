@@ -1,19 +1,69 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import Highcharts from 'highcharts/highstock';
+import { createChart } from 'lightweight-charts';
 import { useParams } from 'react-router-dom';
-import HighchartsReact from 'highcharts-react-official';
 import styled from 'styled-components';
 import './chartStyle.css';
 import { candleStickRequest } from '../../features/candleStick/candleStickSlice';
 import { BREAK_POINT_MOBILE } from '../common/style';
 
 export default function Chart() {
+  const chartContainerRef = useRef(null);
   const dispatch = useDispatch();
-  // const [time, setTime] = useState('10m');
   const [time] = useState('10m');
   const { currencyName } = useParams();
   const chartData = useSelector((state) => state.candleStick.candleStick);
+
+  useEffect(() => {
+    const chart = createChart(chartContainerRef.current, {
+      width: chartContainerRef.current.clientWidth,
+      height: 500,
+      layout: {
+        backgroundColor: '#ffffff',
+        textColor: '#000',
+      },
+      grid: {
+        vertLines: {
+          color: '#e1e1e1',
+        },
+        horzLines: {
+          color: '#e1e1e1',
+        },
+      },
+      priceScale: {
+        borderColor: '#cccccc',
+      },
+      timeScale: {
+        borderColor: '#cccccc',
+      },
+    });
+
+    const candleSeries = chart.addCandlestickSeries();
+
+    let formattedData = chartData.map((item) => ({
+      time: item.candle_date_time_kst.split('T')[0], // 날짜만 사용
+      open: item.opening_price,
+      high: item.high_price,
+      low: item.low_price,
+      close: item.trade_price,
+    }));
+    formattedData = formattedData.sort(
+      (a, b) => new Date(a.time) - new Date(b.time)
+    );
+
+    candleSeries.setData(formattedData);
+
+    const handleResize = () => {
+      chart.resize(chartContainerRef.current.clientWidth, 500);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, [chartData]);
 
   useEffect(() => {
     let setTimeoutID = null;
@@ -31,137 +81,13 @@ export default function Chart() {
     };
   }, [currencyName, dispatch, time]);
 
-  const ohlc = [];
-  const volume = [];
-  const groupingUnits = [
-    ['minute', [5, 10, 30, 60]],
-    ['hour', [1, 2, 4, 6, 12, 24]],
-    ['day', [1]],
-    ['week', [1]],
-    ['month', [1, 2, 3, 6]],
-  ];
-
-  for (let i = 0; i < chartData.length; i++) {
-    ohlc.push([
-      chartData[i][0] + 32400000,
-      Number(chartData[i][1]),
-      Number(chartData[i][2]),
-      Number(chartData[i][3]),
-      Number(chartData[i][4]),
-    ]);
-    volume.push([chartData[i][0] + 32400000, Number(chartData[i][5])]);
-  }
-
-  const options = {
-    rangeSelector: {
-      buttons: [
-        {
-          type: 'hour',
-          count: 1,
-          text: '1시간',
-        },
-        {
-          type: 'day',
-          count: 1,
-          text: '1일',
-        },
-        {
-          type: 'day',
-          count: 7,
-          text: '7일',
-        },
-        {
-          type: 'month',
-          count: 1,
-          text: '1달',
-        },
-        {
-          type: 'year',
-          count: 1,
-          text: '1년',
-        },
-        {
-          type: 'all',
-          text: 'All',
-        },
-      ],
-    },
-    yAxis: [
-      {
-        startOnTick: false,
-        endOnTick: false,
-        labels: {
-          align: 'right',
-          x: -3,
-        },
-        title: {
-          text: currencyName,
-        },
-        height: '60%',
-        lineWidth: 2,
-        resize: {
-          enabled: true,
-        },
-      },
-      {
-        labels: {
-          align: 'right',
-          x: -3,
-        },
-        title: {
-          text: '거래량',
-        },
-        top: '65%',
-        height: '35%',
-        offset: 0,
-        lineWidth: 2,
-      },
-    ],
-    tooltip: {
-      split: true,
-    },
-    plotOptions: {
-      series: {
-        dataGrouping: {
-          units: groupingUnits,
-        },
-      },
-    },
-    title: {
-      text: currencyName,
-    },
-    series: [
-      {
-        type: 'candlestick',
-        name: 'Bitcoin',
-        id: 'coin',
-        zIndex: 2,
-        data: ohlc,
-      },
-      {
-        type: 'column',
-        name: 'Volume',
-        id: 'volume',
-        data: volume,
-        yAxis: 1,
-      },
-    ],
-    chart: {
-      animation: false,
-      styledMode: true,
-    },
-  };
-
   return (
     <>
       <ChartWrapper>
-        <div className='date-selector'>
-          <HighchartsReact
-            highcharts={Highcharts}
-            constructorType={'stockChart'}
-            options={options}
-          />
-        </div>
+        <div
+          ref={chartContainerRef}
+          style={{ width: '100%', height: '500px' }}
+        />
       </ChartWrapper>
     </>
   );
