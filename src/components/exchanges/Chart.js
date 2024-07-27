@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import './chartStyle.css';
 import { candleStickRequest } from '../../features/candleStick/candleStickSlice';
-import { BREAK_POINT_MOBILE } from '../common/style';
+import { BREAK_POINT_MOBILE, MAIN_COLOR_1 } from '../common/style';
 
 export default function Chart() {
   const chartContainerRef = useRef(null);
@@ -13,6 +13,7 @@ export default function Chart() {
   const [time] = useState('10m');
   const { currencyName } = useParams();
   const chartData = useSelector((state) => state.candleStick.candleStick);
+  const [activeButton, setActiveButton] = useState('1day');
 
   useEffect(() => {
     const chart = createChart(chartContainerRef.current, {
@@ -81,9 +82,44 @@ export default function Chart() {
     };
   }, [currencyName, dispatch, time]);
 
+  const handleToggle = (id) => {
+    setActiveButton(id);
+  };
+
   return (
     <>
       <ChartWrapper>
+        <ChartButtonWapper>
+          <div>Time</div>
+          <ChartButton
+            className={activeButton === '1min' ? 'active' : ''}
+            id='1min'
+            onClick={() => handleToggle('1min')}
+          >
+            1min
+          </ChartButton>
+          <ChartButton
+            className={activeButton === '1day' ? 'active' : ''}
+            id='1day'
+            onClick={() => handleToggle('1day')}
+          >
+            1Day
+          </ChartButton>
+          <ChartButton
+            className={activeButton === '1week' ? 'active' : ''}
+            id='1week'
+            onClick={() => handleToggle('1week')}
+          >
+            1Week
+          </ChartButton>
+          <ChartButton
+            className={activeButton === '1month' ? 'active' : ''}
+            id='1month'
+            onClick={() => handleToggle('1month')}
+          >
+            1Month
+          </ChartButton>
+        </ChartButtonWapper>
         <div
           ref={chartContainerRef}
           style={{ width: '100%', height: '500px' }}
@@ -95,15 +131,11 @@ export default function Chart() {
 
 const ChartWrapper = styled.div`
   width: 100%;
-  height: 100vh;
   display: flex;
   justify-content: center;
   flex-direction: column;
-  margin-right: 24px;
-
-  .date-selector {
-    // margin: 227px 24px 50px 0px;
-  }
+  margin-top: 100px;
+  margin-bottom: 24px;
 
   .highcharts-container {
     display: flex;
@@ -117,5 +149,29 @@ const ChartWrapper = styled.div`
     .date-selector {
       margin: 90px 0px 24px 0px;
     }
+  }
+`;
+
+const ChartButtonWapper = styled.div`
+  display: flex;
+  align-items: center;
+  div {
+    margin-right: 8px;
+  }
+`;
+
+const ChartButton = styled.button`
+  min-width: 0px;
+  margin-right: 8px;
+  background-color: #fff;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 4px;
+
+  &.active {
+    color: ${MAIN_COLOR_1} !important;
   }
 `;

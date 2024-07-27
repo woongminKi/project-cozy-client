@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from 'styled-components';
@@ -345,7 +345,7 @@ export default function Main() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coinData]);
 
-  useEffect(() => {
+  useMemo(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
     console.log('wsss', ws);
 

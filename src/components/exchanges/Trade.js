@@ -8,15 +8,12 @@ export default function Trade() {
   return (
     <TradeWrapper>
       <Chart />
-      {/* <Order /> */}
+      <Order />
     </TradeWrapper>
   );
 }
 
 const TradeWrapper = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   margin: 0 100px;
 
   .help-button {

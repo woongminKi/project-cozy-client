@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -8,13 +8,15 @@ import { orderRequest } from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
-  const coinList = useSelector((state) => state.stock.coinList.data.data);
+  // const coinList = useSelector((state) => state.stock.coinList);
+  const [coinList, setCoinList] = useState([]);
+  const [coinData, setCoinData] = useState({});
+  const firstCoinList = useSelector((state) => state.stock.coinList);
   const { currencyName } = useParams();
   const [isBuy, setIsBuy] = useState(true);
   const [unitsTraded, setUnitsTraded] = useState('');
-  const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(
-    coinList[currencyName].closing_price
-  );
+  const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(0);
+  // console.log('currentCurrencyPrice in Order::', currentCurrencyPrice);
 
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
@@ -46,14 +48,37 @@ export default function Order() {
   }
 
   let cash = localStorage.getItem('default_asset');
-  // const buyCoinList = localStorage.getItem('coin-list');
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
+
+  //   ws.onmessage = (event) => {
+  //     const res = JSON.parse(event.data);
+  //     const socketCoinData = res.content;
+  //     const currentCurrencyName = res.content.symbol.split('_')[0];
+  //     setCoinData(socketCoinData);
+
+  //     if (currencyName === currentCurrencyName) {
+  //       setCurrentCurrencyPrice(res.content.closePrice);
+  //     }
+  //   };
+
+  //   ws.onerror = (error) => {
+  //     console.error(error);
+  //   };
+
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, [currencyName]);
+  useMemo(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
 
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
+      const socketCoinData = res.content;
       const currentCurrencyName = res.content.symbol.split('_')[0];
+      setCoinData(socketCoinData);
 
       if (currencyName === currentCurrencyName) {
         setCurrentCurrencyPrice(res.content.closePrice);
@@ -67,7 +92,25 @@ export default function Order() {
     return () => {
       ws.close();
     };
-  }, [currencyName]);
+  }, [currentCurrencyPrice]);
+
+  // useEffect(() => {
+  //   const parsedTickerCoin = JSON.parse(JSON.stringify(firstCoinList));
+  //   console.log('firstCoinList', firstCoinList);
+  //   if (parsedTickerCoin) {
+  //     const coinName = Object.keys(parsedTickerCoin.data.data);
+  //     let coinInfo = Object.values(parsedTickerCoin.data.data);
+  //     // for (let i = 0; i < coinInfo.length - 1; i++) {
+  //     //   if (coinInfo[i].currency_name === undefined) {
+  //     //     coinInfo[i]['currency_name'] = coinName[i];
+  //     //   }
+  //     // }
+  //     // coinInfo = coinInfo.slice(0, coinInfo.length - 1);
+  //     console.log(coinName['currencyName']);
+  //     setCoinList(coinInfo);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [coinData]);
 
   const handleChangeInputValue = (e) => {
     setUnitsTraded(e.target.value);
@@ -163,14 +206,11 @@ export default function Order() {
             보유 현금: {Math.round(cash).toLocaleString()} 원{' '}
           </div>
           <div className='my-asset'>
-            보유 {currencyName}:{' '}
-            {/* {coin ? coin.quantity.toFixed(4).toLocaleString() : 0} 개 */}
-            {coin ? Math.round(coin).toLocaleString() : 0} 개
+            보유 {currencyName}: {coin ? Math.round(coin).toLocaleString() : 0}{' '}
+            개
           </div>
           <div className='my-asset'>
-            평균매수가:{' '}
-            {/* {coin ? Math.round(coin.averagePrice).toLocaleString() : 0} 원 */}
-            {coin ? Math.round(coin).toLocaleString() : 0} 원
+            평균매수가: {coin ? Math.round(coin).toLocaleString() : 0} 원
           </div>
         </AssetWrapper>
         <OrderBoxWrapper>
@@ -232,18 +272,6 @@ export default function Order() {
           >
             {isBuy ? '매수하기' : '매도하기'}
           </TradeButton>
-          {/* {isLoggedIn ? (
-            <TradeButton
-              type='button'
-              className='trade-button'
-              onClick={handleClickOpenTradeModal}
-              style={{ backgroundColor: isBuy ? '#f75467' : '#4386f9' }}
-            >
-              {isBuy ? '매수하기' : '매도하기'}
-            </TradeButton>
-          ) : (
-            <LoginButton onClick={goLogInPage}>로그인 하기</LoginButton>
-          )} */}
         </OrderBoxWrapper>
       </OrderWrapper>
       {(isTrade || isComplete || isNotAuth || isFailInput || isFailTrade) && (
