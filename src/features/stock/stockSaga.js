@@ -8,7 +8,7 @@ import {
   requestSocketData,
 } from './stockSlice';
 
-function* getCoinList({ payload }) {
+function* getCoinList() {
   try {
     const ticker = yield axios.get(
       `https://api.bithumb.com/public/ticker/ALL_KRW`

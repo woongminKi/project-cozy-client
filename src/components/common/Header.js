@@ -64,7 +64,7 @@ export default function Header() {
         ) : (
           <>
             <StyledNavLink to='/'>거래소</StyledNavLink>
-            <StyledNavLink to='/'>자산 현황</StyledNavLink>
+            <StyledNavLink to='/assets'>자산 현황</StyledNavLink>
             <StyledNavLink to='/login'>로그인</StyledNavLink>
           </>
         )}

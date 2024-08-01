@@ -1,21 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { RED, BLUE, BREAK_POINT_MOBILE } from '../common/style';
+import { requestCoinList } from '../../features/stock/stockSlice';
+import Chart from 'chart.js/auto';
 
 export default function Asset() {
+  const dispatch = useDispatch();
+  const chartRef = useRef(null);
   const navigate = useNavigate();
-  const tickerCoinList = useSelector((state) => state.stock.coinList.data.data);
+  const tickerCoinList = useSelector((state) => state.stock.coinList);
+  var myChart;
+  // const tickerCoinList = useSelector((state) => state.stock.coinList.data.data);
 
   let ownedCoinList = localStorage.getItem('order');
   if (!ownedCoinList) {
     ownedCoinList = [];
+  } else {
   }
 
   const [coinList, setCoinList] = useState([]);
   const [newCoinList, setNewCoinList] = useState([]);
   const [socketData, setSocketData] = useState('');
+  const [coinData, setCoinData] = useState({});
   const coinObj = {
     BTC: '비트코인',
     SOFI: '라이파이낸스',
@@ -281,11 +289,16 @@ export default function Asset() {
   };
 
   useEffect(() => {
+    dispatch(requestCoinList());
+  }, [dispatch]);
+
+  useEffect(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
 
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
+      setCoinData(socketCoinData);
       const socketCoinName = socketCoinData.symbol.split('_')[0];
       const socketCoinCurrentPrice = socketCoinData.closePrice;
       const socketCoinObj = {
@@ -303,24 +316,23 @@ export default function Asset() {
     return () => {
       ws.close();
     };
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const parsedTickerCoin = JSON.parse(JSON.stringify(tickerCoinList));
-    const coinName = Object.keys(parsedTickerCoin);
-    const coinInfo = Object.values(parsedTickerCoin);
-
-    for (let i = 0; i < coinInfo.length - 1; i++) {
-      coinInfo[i].currency_name = coinName[i];
-
-      if (coinObj[coinName[i]]) {
-        coinInfo[i].currency_kr_name = `${coinObj[coinInfo[i].currency_name]}`;
+    if (parsedTickerCoin) {
+      const coinName = Object.keys(parsedTickerCoin.data.data);
+      let coinInfo = Object.values(parsedTickerCoin.data.data);
+      for (let i = 0; i < coinInfo.length - 1; i++) {
+        if (coinInfo[i].currency_name === undefined) {
+          coinInfo[i]['currency_name'] = coinName[i];
+        }
       }
+      coinInfo = coinInfo.slice(0, coinInfo.length - 1);
+      setCoinList(coinInfo);
     }
-
-    setCoinList(coinInfo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickerCoinList]);
+  }, [coinData]);
 
   useEffect(() => {
     if (ownedCoinList.length > 0) {
@@ -370,89 +382,160 @@ export default function Asset() {
     }
   }
 
+  useEffect(() => {
+    if (filteredCoinList.length > 0) {
+      const ctx = chartRef.current.getContext('2d');
+
+      // 기존 차트가 존재하면 삭제
+      if (myChart) {
+        myChart.destroy();
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      myChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          // labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+          labels: [filteredCoinList[0].currency_name],
+          datasets: [
+            {
+              label: '보유자산 포트폴리오',
+              // data: [12, 19, 3, 5, 2, 3],
+              data: [filteredCoinList[0].quantity],
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)',
+              ],
+              borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)',
+              ],
+              borderWidth: 1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right',
+            },
+            tooltip: {
+              enabled: true,
+              callbacks: {
+                label: function (tooltipItem) {
+                  var label = tooltipItem.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  label += parseFloat(tooltipItem.dataset.data[0]).toFixed(5);
+                  return label;
+                },
+              },
+            },
+          },
+        },
+      });
+    }
+  }, [filteredCoinList.length]);
+
   const goToMain = () => {
     navigate('/');
   };
 
   return (
-    <AssetWrapper>
-      {ownedCoinList.length > 0 ? (
-        filteredCoinList.map((coinElements) => {
-          return (
-            // <ContentsWrapper key={coinElements.currency_name}>
-            <ContentsWrapper>
-              <ContentsHeader>
-                <div>
-                  {coinElements.currency_name} ({coinElements.currency_kr_name})
-                </div>
-                <div>
-                  <EvaluationProfit>
-                    <ContentsHeaderTitle>평가 손익</ContentsHeaderTitle>{' '}
-                    <div>
-                      {coinElements.evaluate_profit ? (
-                        coinElements.evaluate_profit > 0 ? (
-                          <Red>
-                            {coinElements.evaluate_profit.toLocaleString()}원
-                          </Red>
+    <>
+      <AssetWrapper>
+        <PieChartDiv>
+          <canvas ref={chartRef} />
+        </PieChartDiv>
+        {ownedCoinList.length > 0 ? (
+          filteredCoinList.map((coinElements) => {
+            return (
+              // <ContentsWrapper key={coinElements.currency_name}>
+              <ContentsWrapper>
+                <ContentsHeader>
+                  <div>
+                    {coinElements.currency_name} (
+                    {coinElements.currency_kr_name})
+                  </div>
+                  <div>
+                    <EvaluationProfit>
+                      <ContentsHeaderTitle>평가 손익</ContentsHeaderTitle>{' '}
+                      <div>
+                        {coinElements.evaluate_profit ? (
+                          coinElements.evaluate_profit > 0 ? (
+                            <Red>
+                              {coinElements.evaluate_profit.toLocaleString()}원
+                            </Red>
+                          ) : (
+                            <Blue>
+                              {coinElements.evaluate_profit.toLocaleString()}원
+                            </Blue>
+                          )
                         ) : (
-                          <Blue>
-                            {coinElements.evaluate_profit.toLocaleString()}원
-                          </Blue>
+                          `${(coinElements.evaluate_profit = 0)}원`
+                        )}
+                      </div>
+                    </EvaluationProfit>
+                    <ProfitRate>
+                      <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
+                      {coinElements.evaluate_profit !== 0 ? (
+                        coinElements.evaluate_profit > 0 ? (
+                          <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
+                        ) : (
+                          <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
                         )
                       ) : (
-                        `${(coinElements.evaluate_profit = 0)}원`
+                        `${(coinElements.yield_rate = 0)}%`
                       )}
-                    </div>
-                  </EvaluationProfit>
-                  <ProfitRate>
-                    <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
-                    {coinElements.evaluate_profit !== 0 ? (
-                      coinElements.evaluate_profit > 0 ? (
-                        <Red>{coinElements.yield_rate.toFixed(2)}%</Red>
-                      ) : (
-                        <Blue>{coinElements.yield_rate.toFixed(2)}%</Blue>
-                      )
-                    ) : (
-                      `${(coinElements.yield_rate = 0)}%`
-                    )}
-                  </ProfitRate>
-                </div>
-              </ContentsHeader>
+                    </ProfitRate>
+                  </div>
+                </ContentsHeader>
 
-              <ContentsBody>
-                <ContentsBody1>
-                  <ContentsBodyElements>
-                    <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
-                    {`${coinElements.quantity}개`}
-                  </ContentsBodyElements>
-                  <ContentsBodyElements>
-                    <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}
-                    {coinElements.averagePrice.toLocaleString()}원
-                  </ContentsBodyElements>
-                </ContentsBody1>
-                <ContentsBody2>
-                  <ContentsBodyElements>
-                    <div style={{ marginRight: '8px' }}>평가 금액</div>{' '}
-                    {coinElements.evaluate_price !== 0
-                      ? `${coinElements.evaluate_price.toLocaleString()}원`
-                      : `${(coinElements.evaluate_price = 0)}원`}
-                  </ContentsBodyElements>
-                  <ContentsBodyElements>
-                    <div style={{ marginRight: '8px' }}>매수 금액</div>{' '}
-                    {coinElements.bought_price.toLocaleString()}원
-                  </ContentsBodyElements>
-                </ContentsBody2>
-              </ContentsBody>
-            </ContentsWrapper>
-          );
-        })
-      ) : (
-        <EmptyContentsWrapper>
-          <div>보유한 코인이 없습니다.</div>
-          <MoveBtn onClick={goToMain}>메인 페이지로 이동</MoveBtn>
-        </EmptyContentsWrapper>
-      )}
-    </AssetWrapper>
+                <ContentsBody>
+                  <ContentsBody1>
+                    <ContentsBodyElements>
+                      <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
+                      {`${coinElements.quantity}개`}
+                    </ContentsBodyElements>
+                    <ContentsBodyElements>
+                      <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}
+                      {coinElements.averagePrice.toLocaleString()}원
+                    </ContentsBodyElements>
+                  </ContentsBody1>
+                  <ContentsBody2>
+                    <ContentsBodyElements>
+                      <div style={{ marginRight: '8px' }}>평가 금액</div>{' '}
+                      {coinElements.evaluate_price !== 0
+                        ? `${coinElements.evaluate_price.toLocaleString()}원`
+                        : `${(coinElements.evaluate_price = 0)}원`}
+                    </ContentsBodyElements>
+                    <ContentsBodyElements>
+                      <div style={{ marginRight: '8px' }}>매수 금액</div>{' '}
+                      {coinElements.bought_price.toLocaleString()}원
+                    </ContentsBodyElements>
+                  </ContentsBody2>
+                </ContentsBody>
+              </ContentsWrapper>
+            );
+          })
+        ) : (
+          <EmptyContentsWrapper>
+            <div>보유한 코인이 없습니다.</div>
+            <MoveBtn onClick={goToMain}>메인 페이지로 이동</MoveBtn>
+          </EmptyContentsWrapper>
+        )}
+      </AssetWrapper>
+    </>
   );
 }
 
@@ -461,6 +544,16 @@ const AssetWrapper = styled.div`
 
   @media only screen and (max-width: ${BREAK_POINT_MOBILE}px) {
     margin-top: 94px;
+  }
+`;
+
+const PieChartDiv = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  canvas {
+    width: 300px !important;
+    height: 300px !important;
   }
 `;
 

@@ -14,6 +14,9 @@ export default function Chart() {
   const { currencyName } = useParams();
   const chartData = useSelector((state) => state.candleStick.candleStick);
   const [activeButton, setActiveButton] = useState('1day');
+  const handleToggle = (id) => {
+    setActiveButton(id);
+  };
 
   useEffect(() => {
     const chart = createChart(chartContainerRef.current, {
@@ -41,18 +44,33 @@ export default function Chart() {
 
     const candleSeries = chart.addCandlestickSeries();
 
-    let formattedData = chartData.map((item) => ({
-      time: item.candle_date_time_kst.split('T')[0], // 날짜만 사용
-      open: item.opening_price,
-      high: item.high_price,
-      low: item.low_price,
-      close: item.trade_price,
-    }));
-    formattedData = formattedData.sort(
-      (a, b) => new Date(a.time) - new Date(b.time)
-    );
+    if (activeButton !== '1min') {
+      let formattedData = chartData.map((item) => ({
+        time: item.candle_date_time_kst.split('T')[0], // 날짜만 사용
+        open: item.opening_price,
+        high: item.high_price,
+        low: item.low_price,
+        close: item.trade_price,
+      }));
+      formattedData = formattedData.sort(
+        (a, b) => new Date(a.time) - new Date(b.time)
+      );
 
-    candleSeries.setData(formattedData);
+      candleSeries.setData(formattedData);
+    } else {
+      let formattedData = chartData.map((item) => ({
+        time: item.timestamp, // 날짜만 사용
+        open: item.opening_price,
+        high: item.high_price,
+        low: item.low_price,
+        close: item.trade_price,
+      }));
+      formattedData = formattedData.sort(
+        (a, b) => new Date(a.time) - new Date(b.time)
+      );
+
+      candleSeries.setData(formattedData);
+    }
 
     const handleResize = () => {
       chart.resize(chartContainerRef.current.clientWidth, 500);
@@ -70,7 +88,7 @@ export default function Chart() {
     let setTimeoutID = null;
     const fetchData = function () {
       setTimeoutID = setTimeout(() => {
-        dispatch(candleStickRequest({ currencyName, time }));
+        dispatch(candleStickRequest({ currencyName, time, activeButton }));
 
         fetchData();
       }, 1000);
@@ -80,11 +98,7 @@ export default function Chart() {
     return () => {
       clearTimeout(setTimeoutID);
     };
-  }, [currencyName, dispatch, time]);
-
-  const handleToggle = (id) => {
-    setActiveButton(id);
-  };
+  }, [currencyName, dispatch, time, activeButton]);
 
   return (
     <>

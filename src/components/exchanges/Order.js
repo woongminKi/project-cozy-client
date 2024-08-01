@@ -48,29 +48,6 @@ export default function Order() {
   }
 
   let cash = localStorage.getItem('default_asset');
-
-  // useEffect(() => {
-  //   const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
-
-  //   ws.onmessage = (event) => {
-  //     const res = JSON.parse(event.data);
-  //     const socketCoinData = res.content;
-  //     const currentCurrencyName = res.content.symbol.split('_')[0];
-  //     setCoinData(socketCoinData);
-
-  //     if (currencyName === currentCurrencyName) {
-  //       setCurrentCurrencyPrice(res.content.closePrice);
-  //     }
-  //   };
-
-  //   ws.onerror = (error) => {
-  //     console.error(error);
-  //   };
-
-  //   return () => {
-  //     ws.close();
-  //   };
-  // }, [currencyName]);
   useMemo(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
 
