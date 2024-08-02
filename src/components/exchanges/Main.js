@@ -353,7 +353,6 @@ export default function Main() {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;
       setCoinData(socketCoinData);
-      // dispatch(requestSocketData(socketCoinData)); // maximum request 문제있음
 
       ws.onerror = (error) => {
         console.error(error);
