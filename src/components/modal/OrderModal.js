@@ -44,6 +44,7 @@ const CheckModalWrapper = styled.div`
   text-align: center;
   border-radius: 0.5rem;
   background-color: ${WHITE};
+  z-index: 10;
 `;
 
 const Dimmed = styled.div`
@@ -53,6 +54,7 @@ const Dimmed = styled.div`
   left: 0%;
   top: 0%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1;
 `;
 
 const Button = styled.button`
