@@ -8,7 +8,7 @@ import KakaoRedirectHandler from '../components/KakaoRedirectHandler';
 import CheckoutSuccess from '../components/payment/CheckoutSuccess';
 import CheckoutFail from '../components/payment/CheckoutFail';
 import NotFound from '../components/common/NotFound';
-import '../fonts/PretendardVariable.ttf';
+import '../fonts/Poppins-Light.ttf';
 
 function App() {
   return (

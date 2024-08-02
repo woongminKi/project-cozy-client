@@ -615,7 +615,7 @@ const TableHeaderElements = styled.div`
   display: flex;
   align-items: center;
   justify-content: right;
-  font-family: 'PretendardVariable';
+  font-family: 'Poppins-Light';
   color: ${TABLE_HEADER_FONT_COLOR};
 `;
 
@@ -636,7 +636,7 @@ const TableBodyElements = styled.div`
   width: 20%;
   height: 36px;
   padding: 6px 0;
-  font-family: 'PretendardVariable';
+  font-family: 'Poppins-Light';
   display: flex;
   align-items: center;
   justify-content: right;

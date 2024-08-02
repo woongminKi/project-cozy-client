@@ -97,7 +97,7 @@ const StyledNavLink = styled(NavLink)`
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'PretendardVariable';
+  font-family: 'Poppins-Light';
   font-size: 1.2rem;
   font-weight: 700;
   color: ${FONT_COLOR};
