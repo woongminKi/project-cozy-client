@@ -82,6 +82,7 @@ export default function Chart() {
       window.removeEventListener('resize', handleResize);
       chart.remove();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chartData]);
 
   useEffect(() => {

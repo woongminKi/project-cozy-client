@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
@@ -8,16 +8,11 @@ import { orderRequest } from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
-  // const coinList = useSelector((state) => state.stock.coinList);
-  const [coinList, setCoinList] = useState([]);
-  const [coinData, setCoinData] = useState({});
-  const firstCoinList = useSelector((state) => state.stock.coinList);
+  // const [coinData, setCoinData] = useState({});
   const { currencyName } = useParams();
   const [isBuy, setIsBuy] = useState(true);
   const [unitsTraded, setUnitsTraded] = useState('');
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(0);
-  // console.log('currentCurrencyPrice in Order::', currentCurrencyPrice);
-
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
     isRequest: false,
@@ -53,9 +48,9 @@ export default function Order() {
 
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
-      const socketCoinData = res.content;
+      // const socketCoinData = res.content;
       const currentCurrencyName = res.content.symbol.split('_')[0];
-      setCoinData(socketCoinData);
+      // setCoinData(socketCoinData);
 
       if (currencyName === currentCurrencyName) {
         setCurrentCurrencyPrice(res.content.closePrice);
@@ -69,25 +64,7 @@ export default function Order() {
     return () => {
       ws.close();
     };
-  }, [currentCurrencyPrice]);
-
-  // useEffect(() => {
-  //   const parsedTickerCoin = JSON.parse(JSON.stringify(firstCoinList));
-  //   console.log('firstCoinList', firstCoinList);
-  //   if (parsedTickerCoin) {
-  //     const coinName = Object.keys(parsedTickerCoin.data.data);
-  //     let coinInfo = Object.values(parsedTickerCoin.data.data);
-  //     // for (let i = 0; i < coinInfo.length - 1; i++) {
-  //     //   if (coinInfo[i].currency_name === undefined) {
-  //     //     coinInfo[i]['currency_name'] = coinName[i];
-  //     //   }
-  //     // }
-  //     // coinInfo = coinInfo.slice(0, coinInfo.length - 1);
-  //     console.log(coinName['currencyName']);
-  //     setCoinList(coinInfo);
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [coinData]);
+  }, [currencyName]);
 
   const handleChangeInputValue = (e) => {
     setUnitsTraded(e.target.value);

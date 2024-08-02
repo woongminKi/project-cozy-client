@@ -362,6 +362,7 @@ export default function Main() {
         ws.close();
       };
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   const handleClickSearch = () => {

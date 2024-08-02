@@ -7,7 +7,7 @@ import {
 } from './candleStickSlice';
 
 function* getCandleStickData({ payload }) {
-  const { currencyName, time, activeButton } = payload;
+  const { currencyName, activeButton } = payload;
   let res = '';
 
   try {
