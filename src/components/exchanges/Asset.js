@@ -190,7 +190,7 @@ export default function Asset() {
                   if (label) {
                     label += ': ';
                   }
-                  label += parseFloat(tooltipItem.dataset.data[0]).toFixed(5);
+                  label += parseFloat(tooltipItem.parsed).toFixed(5);
                   return label;
                 },
               },
