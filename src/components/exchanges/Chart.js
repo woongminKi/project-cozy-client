@@ -137,7 +137,7 @@ export default function Chart() {
         </ChartButtonWapper>
         <div
           ref={chartContainerRef}
-          style={{ width: '100%', height: '500px' }}
+          style={{ width: '60%', height: '500px' }}
         />
       </ChartWrapper>
     </>
@@ -148,9 +148,11 @@ const ChartWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
+  align-items: center;
   flex-direction: column;
   margin-top: 100px;
   margin-bottom: 24px;
+  position: relative;
 
   .highcharts-container {
     display: flex;

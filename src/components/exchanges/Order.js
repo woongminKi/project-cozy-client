@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
@@ -13,6 +13,7 @@ export default function Order() {
   const [isBuy, setIsBuy] = useState(true);
   const [unitsTraded, setUnitsTraded] = useState('');
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(0);
+  const currentAssets = useSelector((state) => state.user);
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
     isRequest: false,
@@ -31,15 +32,17 @@ export default function Order() {
   } = isOpenModal;
   const orderPrice = Number(currentCurrencyPrice) * Number(unitsTraded);
   let coin = 0;
-  const coinArray = localStorage.getItem('order');
+  let tempCoinPrice = 0;
+  let avgBoughtPrice = 0;
 
-  if (coinArray !== null) {
-    const coinArrParsed = JSON.parse(coinArray);
-    coinArrParsed.asset.coins.forEach((item) => {
+  if (currentAssets !== null || currentAssets !== undefined) {
+    currentAssets.coins.forEach((item) => {
       if (item.currencyName === currencyName) {
-        coin += 1;
+        coin = coin + item.unitsTraded;
+        tempCoinPrice = tempCoinPrice + item.orderPrice;
       }
     });
+    avgBoughtPrice = tempCoinPrice / currentAssets.coins.length;
   }
 
   let cash = localStorage.getItem('default_asset');
@@ -160,11 +163,10 @@ export default function Order() {
             보유 현금: {Math.round(cash).toLocaleString()} 원{' '}
           </div>
           <div className='my-asset'>
-            보유 {currencyName}: {coin ? Math.round(coin).toLocaleString() : 0}{' '}
-            개
+            보유 {currencyName}: {coin ? coin : 0} 개
           </div>
           <div className='my-asset'>
-            평균매수가: {coin ? Math.round(coin).toLocaleString() : 0} 원
+            평균매수가: {coin ? avgBoughtPrice.toLocaleString() : 0} 원
           </div>
         </AssetWrapper>
         <OrderBoxWrapper>
