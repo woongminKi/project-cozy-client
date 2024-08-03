@@ -199,6 +199,7 @@ export default function Asset() {
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredCoinList.length]);
 
   const goToMain = () => {
@@ -215,7 +216,6 @@ export default function Asset() {
         {ownedCoinList.coins.length > 0 ? (
           filteredCoinList.map((coinElements) => {
             return (
-              // <ContentsWrapper key={coinElements.currency_name}>
               <ContentsWrapper>
                 <ContentsHeader>
                   <div>{coinElements.currency_name}</div>
