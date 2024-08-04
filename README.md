@@ -1,6 +1,6 @@
 # 💸 Coin is Easy
 
-<img width="2030" alt="video" src="https://github.com/user-attachments/assets/08edc6d0-ac1b-4e7b-b2a9-5eb8ccee684f">
+https://github.com/user-attachments/assets/08edc6d0-ac1b-4e7b-b2a9-5eb8ccee684f
 
 초보자를 위한 가상화폐 모의 투자 Cozy입니다!
 
@@ -39,7 +39,7 @@ Cozy가 여러분의 성투를 도와드리겠습니다.
 ## ✅ Features
 |                                          |                                          |
 | ---------------------------------------- | ---------------------------------------- | 
-|<p align="center"><img width="3000" src="https://github.com/user-attachments/assets/5b15f6dc-47fa-4be1-a8a0-f980b67c2b45"/></p><p align="center">👉 사용자는 **실시간으로 가상화폐의 시세를 차트로 보며**매수와 매도를 할 수 있습니다.</p>|<p align="center"><img width="3000" src="https://github.com/user-attachments/assets/02b2d8e6-326f-45f1-b6fe-a369825ea58a" /></p><div align="center">👉 사용자는 자산 내역에서**코인 별 실시간 수익률, 평가 손익 등**을 볼 수 있습니다.</div>
+|<p align="center"><video width="3000" src="https://github.com/user-attachments/assets/5b15f6dc-47fa-4be1-a8a0-f980b67c2b45"/></p><p align="center">👉 사용자는 **실시간으로 가상화폐의 시세를 차트로 보며**매수와 매도를 할 수 있습니다.</p>|<p align="center"><video width="3000" src="https://github.com/user-attachments/assets/02b2d8e6-326f-45f1-b6fe-a369825ea58a" /></p><div align="center">👉 사용자는 자산 내역에서**코인 별 실시간 수익률, 평가 손익 등**을 볼 수 있습니다.</div>
 
 ## 🖥 Tech Stack
 
