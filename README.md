@@ -63,6 +63,10 @@ Cozy가 여러분의 성투를 도와드리겠습니다.
 - Nginx
 - Stripe(test ver.)
 - Bithumb Api
+- CI/CD
+
+### Server
+- AWS EC2
 
 ## 🕹 Getting Started
 
