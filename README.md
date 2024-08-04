@@ -15,10 +15,8 @@ Cozy가 여러분의 성투를 도와드리겠습니다.
 - 🌎 Deploy
 - 💡 Motivation
 - ✅ Features
-- 📅 Schedule
 - 🖥 Tech Stack
 - 🕹 Getting Started
-- 🤔 Why we used it
 
 ## 🌎 Deploy
 
