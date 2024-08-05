@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { styled } from 'styled-components';
 import { requestCoinList } from '../../features/stock/stockSlice';
+import { loginSuccess } from '../../features/auth/authSlice';
+import { getCookie } from '../../utils/cookies';
 import FloatingButton from '../common/FloatingButton';
 import SettingModal from '../modal/SettingModal';
 import {
@@ -328,6 +330,14 @@ export default function Main() {
   useEffect(() => {
     dispatch(requestCoinList());
   }, [dispatch]);
+
+  useEffect(() => {
+    const checkCookie = getCookie('accessToken');
+    if (checkCookie !== undefined) {
+      dispatch(loginSuccess());
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const parsedTickerCoin = JSON.parse(JSON.stringify(tickerCoinList));

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginRequest, loginSuccess } from '../features/auth/authSlice';
+import { setCookie } from '../utils/cookies';
 import axios from 'axios';
 import qs from 'qs';
 
@@ -28,7 +29,6 @@ export default function KakaoRedirectHandler() {
         'https://kauth.kakao.com/oauth/token',
         payload
       );
-      // console.log('로그인 res??', res);
       window.Kakao.init(restAPIKey);
       window.Kakao.Auth.setAccessToken(res.data.access_token);
 
@@ -37,7 +37,6 @@ export default function KakaoRedirectHandler() {
       }
 
       if (res.status === 200) {
-        // dispatch(loginSuccess());
         const data = await window.Kakao.API.request({
           url: '/v2/user/me',
         });
@@ -53,6 +52,24 @@ export default function KakaoRedirectHandler() {
             refreshTokenExpiresIn: res.data.refresh_token_expires_in,
           })
         );
+
+        setCookie('accessToken', res.data.refresh_token, {
+          path: '/',
+          secure: true,
+          // domain: 'coin-is-easy.xyz',
+          sameSite: 'none',
+          maxAge: 7200,
+          // httpOnly: true,
+        });
+        setCookie('refreshToken', res.data.refreshToken, {
+          path: '/',
+          secure: true,
+          // domain: 'coin-is-easy.xyz',
+          sameSite: 'none',
+          maxAge: 604800,
+          // httpOnly: true,
+        });
+
         navigate('/');
       }
     } catch (err) {
