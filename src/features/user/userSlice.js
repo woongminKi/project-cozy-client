@@ -43,6 +43,21 @@ const userSlice = createSlice({
         Number(currentMoney) - Number(action.payload.orderPrice)
       );
     },
+    orderReset: (state, action) => {
+      state.coins = [];
+    },
+    orderSellingRequest: (state, action) => {
+      // console.log('팔았어?', action.payload);
+      let currentMoney = localStorage.getItem('default_asset');
+      state.cash = Number(currentMoney) + Number(action.payload.orderPrice);
+      // state.coins.filter(
+      //   (item) => item.currenyName !== action.payload.currencyName
+      // );
+      localStorage.setItem(
+        'default_asset',
+        Number(currentMoney) + Number(action.payload.orderPrice)
+      );
+    },
     orderSuccess: (state, action) => {
       state.user = Object.assign({}, action.payload);
     },
@@ -66,6 +81,8 @@ export const {
   loginUserData,
   logout,
   orderRequest,
+  orderSellingRequest,
+  orderReset,
   orderSuccess,
   orderFailure,
   openHelpModal,

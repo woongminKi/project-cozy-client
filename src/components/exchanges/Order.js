@@ -1,10 +1,14 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
-import { orderRequest } from '../../features/user/userSlice';
+import {
+  orderRequest,
+  orderSellingRequest,
+  orderReset,
+} from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
@@ -14,6 +18,8 @@ export default function Order() {
   const [unitsTraded, setUnitsTraded] = useState('');
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(0);
   const currentAssets = useSelector((state) => state.user);
+  // console.log('currentAssets??', currentAssets);
+  const [checkStatus, setCheckStatus] = useState('매수');
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
     isRequest: false,
@@ -38,12 +44,24 @@ export default function Order() {
   if (currentAssets !== null || currentAssets !== undefined) {
     currentAssets.coins.forEach((item) => {
       if (item.currencyName === currencyName) {
-        coin = coin + item.unitsTraded;
-        tempCoinPrice = tempCoinPrice + item.orderPrice;
+        if (item.isBuy === true) {
+          coin = coin + item.unitsTraded;
+          tempCoinPrice = tempCoinPrice + item.orderPrice;
+        } else {
+          coin = coin - item.unitsTraded;
+          tempCoinPrice = tempCoinPrice - item.orderPrice;
+        }
       }
     });
+
     avgBoughtPrice = tempCoinPrice / currentAssets.coins.length;
   }
+
+  useEffect(() => {
+    if (coin <= 0) {
+      dispatch(orderReset());
+    }
+  }, []);
 
   let cash = localStorage.getItem('default_asset');
   useMemo(() => {
@@ -54,7 +72,6 @@ export default function Order() {
       // const socketCoinData = res.content;
       const currentCurrencyName = res.content.symbol.split('_')[0];
       // setCoinData(socketCoinData);
-
       if (currencyName === currentCurrencyName) {
         setCurrentCurrencyPrice(res.content.closePrice);
       }
@@ -75,11 +92,13 @@ export default function Order() {
 
   const handleClickToggle = (e) => {
     if (e.target.value === '매수' && !isBuy) {
+      setCheckStatus('매수');
       setIsBuy(true);
       setUnitsTraded('');
     }
 
     if (e.target.value === '매도' && isBuy) {
+      setCheckStatus('매도');
       setIsBuy(false);
       setUnitsTraded('');
     }
@@ -135,6 +154,8 @@ export default function Order() {
       return;
     }
 
+    // if (checkStatus === '매수') {
+    // 매수 요청 로직
     dispatch(
       orderRequest({
         transactionDate: new Date(),
@@ -145,6 +166,19 @@ export default function Order() {
         isBuy,
       })
     );
+    // }
+    // else {
+    //   dispatch(
+    //     orderSellingRequest({
+    //       transactionDate: new Date(),
+    //       currencyName,
+    //       price: Number(currentCurrencyPrice),
+    //       unitsTraded: Number(unitsTraded),
+    //       orderPrice,
+    //       isBuy,
+    //     })
+    //   );
+    // }
 
     setIsOpenModal({
       ...isOpenModal,
@@ -163,10 +197,11 @@ export default function Order() {
             보유 현금: {Math.round(cash).toLocaleString()} 원{' '}
           </div>
           <div className='my-asset'>
-            보유 {currencyName}: {coin ? coin : 0} 개
+            보유 {currencyName}: {coin > 0 ? coin : 0} 개
           </div>
           <div className='my-asset'>
-            평균매수가: {coin ? avgBoughtPrice.toLocaleString() : 0} 원
+            평균매수가:{' '}
+            {avgBoughtPrice > 0 ? avgBoughtPrice.toLocaleString() : 0} 원
           </div>
         </AssetWrapper>
         <OrderBoxWrapper>
