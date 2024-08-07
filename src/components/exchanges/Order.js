@@ -63,9 +63,7 @@ export default function Order() {
 
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
-      // const socketCoinData = res.content;
       const currentCurrencyName = res.content.symbol.split('_')[0];
-      // setCoinData(socketCoinData);
       if (currencyName === currentCurrencyName) {
         setCurrentCurrencyPrice(res.content.closePrice);
       }
