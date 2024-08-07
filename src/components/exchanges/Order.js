@@ -84,13 +84,11 @@ export default function Order() {
 
   const handleClickToggle = (e) => {
     if (e.target.value === '매수' && !isBuy) {
-      // setCheckStatus('매수');
       setIsBuy(true);
       setUnitsTraded('');
     }
 
     if (e.target.value === '매도' && isBuy) {
-      // setCheckStatus('매도');
       setIsBuy(false);
       setUnitsTraded('');
     }
