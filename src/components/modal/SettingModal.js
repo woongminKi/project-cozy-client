@@ -9,7 +9,6 @@ export default function SettingModal({ onTrade, onClose, children }) {
   const handleDefaultAsset = (e) => {
     defaultAsset = e.target.value;
     localStorage.setItem('default_asset', defaultAsset);
-    // console.log('??', e.target.value);
   };
   return (
     <>

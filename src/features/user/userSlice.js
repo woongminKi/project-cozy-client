@@ -8,18 +8,11 @@ const userSlice = createSlice({
     transactionHistory: [],
     isOpenHelpModal: false,
     error: '',
+    userData: {},
   },
   reducers: {
     loginUserData: (state, action) => {
-      // console.log('userSlice에서 loginUserData', action.payload);
-      // state.user = Object.assign({}, action.payload);
-      // state.user = {
-      //   asset: {
-      //     cash: 100000000,
-      //     coins: [],
-      //   },
-      //   transactionHistory: [],
-      // };
+      state.userData = action.payload;
     },
     logout: (state) => {
       state.user = {
@@ -35,28 +28,24 @@ const userSlice = createSlice({
     },
     orderRequest: (state, action) => {
       let currentMoney = localStorage.getItem('default_asset');
-      state.cash = Number(currentMoney) - Number(action.payload.orderPrice);
+      if (action.payload.isBuy === true) {
+        state.cash = Number(currentMoney) - Number(action.payload.orderPrice);
+        localStorage.setItem(
+          'default_asset',
+          Number(currentMoney) - Number(action.payload.orderPrice)
+        );
+      } else {
+        state.cash = Number(currentMoney) + Number(action.payload.orderPrice);
+        localStorage.setItem(
+          'default_asset',
+          Number(currentMoney) + Number(action.payload.orderPrice)
+        );
+      }
       state.coins.push(action.payload);
       localStorage.setItem('order', JSON.stringify(state.user));
-      localStorage.setItem(
-        'default_asset',
-        Number(currentMoney) - Number(action.payload.orderPrice)
-      );
     },
     orderReset: (state, action) => {
       state.coins = [];
-    },
-    orderSellingRequest: (state, action) => {
-      // console.log('팔았어?', action.payload);
-      let currentMoney = localStorage.getItem('default_asset');
-      state.cash = Number(currentMoney) + Number(action.payload.orderPrice);
-      // state.coins.filter(
-      //   (item) => item.currenyName !== action.payload.currencyName
-      // );
-      localStorage.setItem(
-        'default_asset',
-        Number(currentMoney) + Number(action.payload.orderPrice)
-      );
     },
     orderSuccess: (state, action) => {
       state.user = Object.assign({}, action.payload);
@@ -81,7 +70,6 @@ export const {
   loginUserData,
   logout,
   orderRequest,
-  orderSellingRequest,
   orderReset,
   orderSuccess,
   orderFailure,

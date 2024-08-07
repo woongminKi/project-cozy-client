@@ -16,7 +16,6 @@ function* userLogin({ payload }) {
           },
         }
       );
-      // console.log('userLogin token res??', response.data.userData);
       loginUserData({
         uid: response.data.userData.uid,
         user_name: response.data.userData.displayName,
@@ -29,7 +28,6 @@ function* userLogin({ payload }) {
 }
 
 function* userLogout({ payload }) {
-  // console.log('logout payload', payload);
   try {
     const response = yield axios.post(
       `${process.env.REACT_APP_SERVER_URL}/user/logout`,
@@ -37,7 +35,7 @@ function* userLogout({ payload }) {
         data: payload.user.uid,
       }
     );
-    // console.log('logout res??', response);
+
     if (response.data.status === 200) {
       yield logoutRequest();
     }

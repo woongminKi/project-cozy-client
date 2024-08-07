@@ -70,37 +70,68 @@ export default function Asset() {
     }
   }, [ownedCoinList]);
 
+  let coinListMerged = newCoinList.reduce((acc, curr) => {
+    let existing = acc.find((item) => item.currencyName === curr.currencyName);
+
+    if (existing) {
+      if (curr.isBuy === true) {
+        existing.orderPrice += curr.orderPrice;
+        existing.price += curr.price;
+        existing.unitsTraded += curr.unitsTraded;
+      } else {
+        existing.orderPrice -= curr.orderPrice;
+        existing.price -= curr.price;
+        existing.unitsTraded -= curr.unitsTraded;
+      }
+
+      // if (existing.orderPrice <= 0) {
+      //   existing.orderPrice = 0;
+      // }
+      // if (existing.price <= 0) {
+      //   existing.price = 0;
+      // }
+      // if (existing.unitsTraded <= 0) {
+      //   existing.unitsTraded = 0;
+      // }
+    } else {
+      acc.push({ ...curr });
+    }
+
+    return acc;
+  }, []);
+
   let filteredCoinList = [];
-  for (let i = 0; i < newCoinList.length; i++) {
+  for (let i = 0; i < coinListMerged.length; i++) {
     for (let j = 0; j < coinList.length - 1; j++) {
-      if (coinList[j].currency_name === newCoinList[i].currencyName) {
-        coinList[j].orderPrice = newCoinList[i].orderPrice;
-        coinList[j].bought_price = newCoinList[i].price;
-        coinList[j].transactionDate = newCoinList[i].transactionDate;
-        coinList[j].quantity = newCoinList[i].unitsTraded;
+      if (coinList[j].currency_name === coinListMerged[i].currencyName) {
+        coinList[j].orderPrice = coinListMerged[i].orderPrice;
+        coinList[j].bought_price = coinListMerged[i].price;
+        coinList[j].transactionDate = coinListMerged[i].transactionDate;
+        coinList[j].quantity = coinListMerged[i].unitsTraded;
         coinList[j].averagePrice =
-          newCoinList[i].unitsTraded * newCoinList[i].price;
+          coinListMerged[i].unitsTraded * coinListMerged[i].price;
 
         if (coinList[j].currency_name === socketData.name) {
           coinList[j].current_price = socketData.price;
           coinList[j].evaluate_price =
-            newCoinList[i].unitsTraded * socketData.price;
+            coinListMerged[i].unitsTraded * socketData.price;
           coinList[j].evaluate_profit =
-            coinList[j].quantity * socketData.price - newCoinList[i].price;
+            coinList[j].quantity * socketData.price - coinListMerged[i].price;
           coinList[j].yield_rate =
-            ((coinList[j].quantity * socketData.price - newCoinList[i].price) /
-              newCoinList[i].price) *
+            ((coinList[j].quantity * socketData.price -
+              coinListMerged[i].price) /
+              coinListMerged[i].price) *
             100;
         } else {
           coinList[j].evaluate_price =
-            newCoinList[i].unitsTraded * coinList[j].closing_price;
+            coinListMerged[i].unitsTraded * coinList[j].closing_price;
           coinList[j].evaluate_profit =
-            newCoinList[i].unitsTraded * coinList[j].closing_price -
-            newCoinList[i].price;
+            coinListMerged[i].unitsTraded * coinList[j].closing_price -
+            coinListMerged[i].price;
           coinList[j].yield_rate =
-            ((newCoinList[i].unitsTraded * coinList[j].closing_price -
-              newCoinList[i].price) /
-              newCoinList[i].price) *
+            ((coinListMerged[i].unitsTraded * coinList[j].closing_price -
+              coinListMerged[i].price) /
+              coinListMerged[i].price) *
             100;
         }
 
@@ -110,39 +141,19 @@ export default function Asset() {
   }
 
   useEffect(() => {
-    const totalUnits = ownedCoinList.coins.reduce((acc, transaction) => {
-      const { currencyName, unitsTraded } = transaction;
+    let totalUnits = [];
+    if (coinListMerged.length > 0) {
+      totalUnits = coinListMerged.reduce((acc, transaction) => {
+        const { currencyName, unitsTraded } = transaction;
 
-      if (!acc[currencyName]) {
-        acc[currencyName] = 0;
-      }
+        if (!acc[currencyName]) {
+          acc[currencyName] = 0;
+        }
 
-      acc[currencyName] += unitsTraded;
-      return acc;
-    }, {});
-
-    // const totalFilteredCoinList = filteredCoinList.reduce(
-    //   (acc, transaction) => {
-    //     const {
-    //       currency_name,
-    //       quantity,
-    //       evaluate_profit,
-    //       yield_rate,
-    //       averagePrice,
-    //       evaluate_price,
-    //       bought_price,
-    //     } = transaction;
-
-    //     if (!acc[currency_name]) {
-    //       acc[currency_name] = 0;
-    //     }
-    //     console.log('!@!@!', acc[currency_name]);
-    //     acc[currency_name] += quantity;
-    //     acc[currency_name] += evaluate_profit;
-    //     return acc;
-    //   },
-    //   {}
-    // );
+        acc[currencyName] += unitsTraded;
+        return acc;
+      }, {});
+    }
 
     if (filteredCoinList.length > 0) {
       const ctx = chartRef.current.getContext('2d');
@@ -206,7 +217,6 @@ export default function Asset() {
     navigate('/');
   };
 
-  // console.log('filteredCoinList?', filteredCoinList);
   return (
     <>
       <AssetWrapper>
@@ -250,7 +260,8 @@ export default function Asset() {
                     </EvaluationProfit>
                     <ProfitRate>
                       <ContentsHeaderTitle>수익률</ContentsHeaderTitle>{' '}
-                      {coinElements.yield_rate !== 0 ? (
+                      {coinElements.yield_rate !== 0 &&
+                      coinElements.yield_rate !== Infinity ? (
                         100 + coinElements.yield_rate > 0 ? (
                           <Red>
                             {(100 + coinElements.yield_rate).toFixed(2)}%
@@ -271,7 +282,7 @@ export default function Asset() {
                   <ContentsBody1>
                     <ContentsBodyElements>
                       <div style={{ marginRight: '8px' }}>보유 수량</div>{' '}
-                      {`${coinElements.quantity}개`}
+                      {`${coinElements.quantity.toFixed(5)}개`}
                     </ContentsBodyElements>
                     <ContentsBodyElements>
                       <div style={{ marginRight: '8px' }}>평균 매수가</div>{' '}

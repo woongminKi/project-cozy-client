@@ -357,8 +357,6 @@ export default function Main() {
 
   useMemo(() => {
     const ws = new WebSocket(process.env.REACT_APP_WEBSOCKET_SERVER_URL);
-    console.log('wsss', ws);
-
     ws.onmessage = (event) => {
       const res = JSON.parse(event.data);
       const socketCoinData = res.content;

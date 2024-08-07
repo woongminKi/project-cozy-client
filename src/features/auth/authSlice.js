@@ -18,10 +18,8 @@ export const authSlice = createSlice({
   reducers: {
     loginRequest: (state, action) => {
       state.user = action.payload;
-      // console.log('loginSuccess action payload??', action.payload);
     },
     loginSuccess: (state, action) => {
-      // console.log('isLoggedIn status?', state);
       state.loginStatus = true;
       state.isLoggedIn = true;
     },
@@ -32,12 +30,10 @@ export const authSlice = createSlice({
     logoutRequest: (state, action) => {
       state.isLoggedIn = false;
       state.isSignUp = false;
-      // console.log('logout Request action payload??', action.payload);
     },
     logoutSuccess: (state) => {
       state.isLoggedIn = false;
       state.isSignUp = false;
-      // console.log('logout success action payload??');
     },
     closeWelcomeModal: (state) => {
       state.isSignUp = false;

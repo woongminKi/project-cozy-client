@@ -23,7 +23,6 @@ function* getCoinList() {
 function* getSocketData({ payload }) {
   try {
     const realTimeSocketData = { ...payload };
-    // console.log('코인 ticker??', realTimeSocketData);
     yield put(socketData(realTimeSocketData));
   } catch (err) {
     yield put(socketFailure(err));

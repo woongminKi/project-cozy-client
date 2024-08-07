@@ -15,7 +15,6 @@ export default function FloatingButton({ supportItem }) {
           userId: user.uid,
         }
       );
-      // console.log('checkout session-data res??', res);
       if (res.data.url) {
         window.location.href = res.data.url;
       }

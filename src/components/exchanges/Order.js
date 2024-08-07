@@ -4,22 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { MAIN_COLOR_1, WHITE, BREAK_POINT_MOBILE } from '../common/style';
 import OrderModal from '../modal/OrderModal';
-import {
-  orderRequest,
-  orderSellingRequest,
-  orderReset,
-} from '../../features/user/userSlice';
+import { orderRequest, orderReset } from '../../features/user/userSlice';
 
 export default function Order() {
   const dispatch = useDispatch();
-  // const [coinData, setCoinData] = useState({});
   const { currencyName } = useParams();
   const [isBuy, setIsBuy] = useState(true);
   const [unitsTraded, setUnitsTraded] = useState('');
   const [currentCurrencyPrice, setCurrentCurrencyPrice] = useState(0);
   const currentAssets = useSelector((state) => state.user);
-  // console.log('currentAssets??', currentAssets);
-  const [checkStatus, setCheckStatus] = useState('매수');
   const [isOpenModal, setIsOpenModal] = useState({
     isTrade: false,
     isRequest: false,
@@ -61,6 +54,7 @@ export default function Order() {
     if (coin <= 0) {
       dispatch(orderReset());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   let cash = localStorage.getItem('default_asset');
@@ -92,13 +86,13 @@ export default function Order() {
 
   const handleClickToggle = (e) => {
     if (e.target.value === '매수' && !isBuy) {
-      setCheckStatus('매수');
+      // setCheckStatus('매수');
       setIsBuy(true);
       setUnitsTraded('');
     }
 
     if (e.target.value === '매도' && isBuy) {
-      setCheckStatus('매도');
+      // setCheckStatus('매도');
       setIsBuy(false);
       setUnitsTraded('');
     }
@@ -166,19 +160,6 @@ export default function Order() {
         isBuy,
       })
     );
-    // }
-    // else {
-    //   dispatch(
-    //     orderSellingRequest({
-    //       transactionDate: new Date(),
-    //       currencyName,
-    //       price: Number(currentCurrencyPrice),
-    //       unitsTraded: Number(unitsTraded),
-    //       orderPrice,
-    //       isBuy,
-    //     })
-    //   );
-    // }
 
     setIsOpenModal({
       ...isOpenModal,
@@ -197,7 +178,7 @@ export default function Order() {
             보유 현금: {Math.round(cash).toLocaleString()} 원{' '}
           </div>
           <div className='my-asset'>
-            보유 {currencyName}: {coin > 0 ? coin : 0} 개
+            보유 {currencyName}: {coin > 0 ? coin.toFixed(5) : 0} 개
           </div>
           <div className='my-asset'>
             평균매수가:{' '}

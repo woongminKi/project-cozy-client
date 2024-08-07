@@ -30,7 +30,6 @@ export default function CheckoutForm() {
       switch (paymentIntent.status) {
         case 'succeeded':
           setMessage('Payment succeeded!');
-          console.log('success??');
           break;
         case 'processing':
           setMessage('Your payment is processing.');
