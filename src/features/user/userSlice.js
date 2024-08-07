@@ -5,7 +5,6 @@ const userSlice = createSlice({
   initialState: {
     coins: [],
     cash: 0,
-    transactionHistory: [],
     isOpenHelpModal: false,
     error: '',
     userData: {},
@@ -23,7 +22,6 @@ const userSlice = createSlice({
           cash: 0,
           coins: [],
         },
-        transactionHistory: [],
       };
     },
     orderRequest: (state, action) => {
