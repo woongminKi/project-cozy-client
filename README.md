@@ -12,13 +12,10 @@ Cozy가 여러분의 성투를 도와드리겠습니다.
 
 ## 🚀 ShortCut
 
-- 🌎 Deploy
 - 💡 Motivation
 - ✅ Features
 - 🖥 Tech Stack
 - 🕹 Getting Started
-
-## 🌎 Deploy
 
 ## 💡 Motivation
 
